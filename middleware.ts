@@ -1,19 +1,18 @@
 import { auth } from "@/auth";
 
 export default auth((req) => {
-  // Middleware will automatically redirect to /login if not authenticated
-  // because NextAuth v5 handles this internally
+  if (!req.auth) {
+    return Response.redirect(new URL("/login", req.url));
+  }
 });
 
 export const config = {
   matcher: [
     "/",
-    "/dashboard/:path*",
-    "/clientes/:path*",
-    "/motos/:path*",
-    "/contratos/:path*",
     "/pagos/:path*",
     "/facturas/:path*",
     "/alertas/:path*",
+    "/dashboard/:path*",
+    "/usuarios/:path*",
   ],
 };
