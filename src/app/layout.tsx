@@ -45,6 +45,9 @@ export default function RootLayout({
           <span style={{ fontWeight: 700 }}>Alquiler Motos</span>
 
           <a href="/">Dashboard</a>
+          <a href="/clientes">Clientes</a>
+          <a href="/motos">Motos</a>
+          <a href="/contratos">Contratos</a>
           <a href="/pagos">Pagos</a>
           <a href="/facturas">Facturas</a>
           <a href="/alertas">Alertas</a>

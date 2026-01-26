@@ -1,0 +1,74 @@
+[2026-01-26 17:31:47] 📥 Pulling cambios...
+From https://github.com/d5b5m54hpz-beep/alquiler-motos
+ * branch            main       -> FETCH_HEAD
+ * [new branch]      main       -> origin/main
+error: Your local changes to the following files would be overwritten by merge:
+	.gitignore
+	next.config.ts
+	package-lock.json
+	package.json
+	src/app/layout.tsx
+	tsconfig.json
+Please commit your changes or stash them before you merge.
+error: The following untracked working tree files would be overwritten by merge:
+	middleware.ts
+	prisma/migrations/migration_lock.toml
+	prisma/schema.prisma
+	prisma/seed.ts
+	src/app/alertas/page.tsx
+	src/app/api/alertas/[id]/leer/route.ts
+	src/app/api/alertas/count/route.ts
+	src/app/api/alertas/route.ts
+	src/app/api/facturas/[id]/pdf/route.ts
+	src/app/api/facturas/route.ts
+	src/app/api/jobs/contratos-por-vencer/route.ts
+	src/app/api/jobs/facturar-pagos/route.ts
+	src/app/api/jobs/vencimientos/route.ts
+	src/app/api/pagos/marcar-pagado/route.ts
+	src/app/api/pagos/route.ts
+	src/app/api/test/db-check/route.ts
+	src/app/api/test/marcar-pago-pagado/route.ts
+	src/app/components/AlertBadge.tsx
+	src/app/components/AlertDropdown.tsx
+	src/app/facturas/page.tsx
+	src/app/pagos/page.tsx
+	src/cron.ts
+	src/lib/prisma.ts
+	vercel.json
+Please move or remove them before you merge.
+Aborting
+Updating 66f7312..11ad7d4
+[2026-01-26 17:31:47] ➕ Agregando cambios...
+[2026-01-26 17:31:47] 💾 Commit: Auto-sync: 2026-01-26 17:32:09
+[main 2c08907] Auto-sync: 2026-01-26 17:32:09
+ 35 files changed, 2073 insertions(+), 21 deletions(-)
+ create mode 100755 auto-sync.sh
+ create mode 100644 git-sync.log
+ create mode 100644 middleware.ts
+ create mode 100644 prisma/migrations/20260123070907_init/migration.sql
+ create mode 100644 prisma/migrations/20260123100423_init/migration.sql
+ create mode 100644 prisma/migrations/20260123102315_facturas/migration.sql
+ create mode 100644 prisma/migrations/migration_lock.toml
+ create mode 100644 prisma/schema.prisma
+ create mode 100644 prisma/seed.ts
+ create mode 100644 src/app/alertas/page.tsx
+ create mode 100644 src/app/api/alertas/[id]/leer/route.ts
+ create mode 100644 src/app/api/alertas/count/route.ts
+ create mode 100644 src/app/api/alertas/route.ts
+ create mode 100644 src/app/api/facturas/[id]/pdf/route.ts
+ create mode 100644 src/app/api/facturas/route.ts
+ create mode 100644 src/app/api/jobs/contratos-por-vencer/route.ts
+ create mode 100644 src/app/api/jobs/facturar-pagos/route.ts
+ create mode 100644 src/app/api/jobs/vencimientos/route.ts
+ create mode 100644 src/app/api/pagos/marcar-pagado/route.ts
+ create mode 100644 src/app/api/pagos/route.ts
+ create mode 100644 src/app/api/test/db-check/route.ts
+ create mode 100644 src/app/api/test/marcar-pago-pagado/route.ts
+ create mode 100644 src/app/components/AlertBadge.tsx
+ create mode 100644 src/app/components/AlertDropdown.tsx
+ create mode 100644 src/app/facturas/page.tsx
+ create mode 100644 src/app/pagos/page.tsx
+ create mode 100644 src/cron.ts
+ create mode 100644 src/lib/prisma.ts
+ create mode 100644 vercel.json
+[2026-01-26 17:31:47] 📤 Pushing cambios...
