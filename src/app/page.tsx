@@ -1,65 +1,151 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
+
+type DashboardData = {
+  totalCobrado: number;
+  pagosPendientes: number;
+  pagosVencidos: number;
+  facturasEmitidas: number;
+  alertasNoLeidas: number;
+};
+
+type ChartData = {
+  ingresos: { fecha: string; total: number }[];
+  estados: { estado: string; cantidad: number }[];
+};
+
+export default function DashboardPage() {
+  const [days, setDays] = useState(30);
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [charts, setCharts] = useState<ChartData | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/dashboard?days=${days}`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then(setData);
+
+    fetch(`/api/dashboard/charts?days=${days}`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then(setCharts);
+  }, [days]);
+
+  if (!data || !charts) return <p>Cargando dashboard…</p>;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div style={{ padding: 24 }}>
+      <h1>Dashboard</h1>
+
+      {/* Filtros */}
+      <div style={{ marginTop: 12 }}>
+        {[7, 30, 90].map((d) => (
+          <button
+            key={d}
+            onClick={() => setDays(d)}
+            style={{
+              marginRight: 8,
+              padding: "6px 12px",
+              borderRadius: 6,
+              border: "1px solid #ccc",
+              background: days === d ? "#2563eb" : "#fff",
+              color: days === d ? "#fff" : "#000",
+              cursor: "pointer",
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Últimos {d} días
+          </button>
+        ))}
+      </div>
+
+      {/* KPIs */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: 16,
+          marginTop: 24,
+        }}
+      >
+        <Card title="💰 Total cobrado" value={`$${data.totalCobrado}`} />
+        <Card title="⏳ Pagos pendientes" value={data.pagosPendientes} />
+        <Card title="🔴 Pagos vencidos" value={data.pagosVencidos} />
+        <Card title="📄 Facturas emitidas" value={data.facturasEmitidas} />
+        <Card title="🔔 Alertas no leídas" value={data.alertasNoLeidas} />
+      </div>
+
+      {/* Gráficos */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 24,
+          marginTop: 40,
+        }}
+      >
+        <div style={{ height: 300 }}>
+          <h3>Ingresos por día</h3>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={charts.ingresos}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="fecha" />
+              <YAxis />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="total"
+                stroke="#2563eb"
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
-      </main>
+
+        <div style={{ height: 300 }}>
+          <h3>Pagos por estado</h3>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={charts.estados}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="estado" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="cantidad" fill="#16a34a" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Card({
+  title,
+  value,
+}: {
+  title: string;
+  value: string | number;
+}) {
+  return (
+    <div
+      style={{
+        border: "1px solid #ddd",
+        borderRadius: 8,
+        padding: 16,
+        background: "white",
+      }}
+    >
+      <h3 style={{ marginBottom: 8 }}>{title}</h3>
+      <div style={{ fontSize: 24, fontWeight: "bold" }}>{value}</div>
     </div>
   );
 }

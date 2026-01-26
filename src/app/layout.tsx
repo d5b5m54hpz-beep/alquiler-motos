@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AlertDropdown } from "./components/AlertDropdown";
+import "@/cron";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,11 +25,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <nav
+          style={{
+            display: "flex",
+            gap: 16,
+            padding: 16,
+            borderBottom: "1px solid #ddd",
+            alignItems: "center",
+          }}
+        >
+          <a href="/">Dashboard</a>
+          <a href="/contratos">Contratos</a>
+          <a href="/pagos">Pagos</a>
+
+          <div style={{ marginLeft: "auto" }}>
+            <AlertDropdown />
+          </div>
+        </nav>
+
+        <main style={{ padding: 16 }}>{children}</main>
       </body>
     </html>
   );
