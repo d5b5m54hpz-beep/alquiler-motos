@@ -1,9 +1,12 @@
 import { prisma } from "@/lib/prisma";
+import { requireRole } from "@/lib/authz";
 
 export async function POST(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  await requireRole(["admin", "operador"]);
+
   const { id } = await params;
 
   const alerta = await prisma.alerta.findUnique({

@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
+import { requireRole } from "@/lib/authz";
 
 export async function GET() {
+  await requireRole(["admin", "operador", "auditor"]);
+
   const pagos = await prisma.pago.findMany({
     include: {
       contrato: true,
@@ -14,6 +17,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  await requireRole(["admin", "operador"]);
+
   const body = await req.json();
   const { contratoId, monto, metodo, referencia } = body ?? {};
 

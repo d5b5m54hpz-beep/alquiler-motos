@@ -1,7 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
+import { requireRole } from "@/lib/authz";
 
 export async function POST() {
+  await requireRole(["admin"]);
+
   const ahora = new Date();
 
   const pagos = await prisma.pago.findMany({

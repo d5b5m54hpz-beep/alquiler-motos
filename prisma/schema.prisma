@@ -7,10 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
+enum Rol {
   admin
   operador
   auditor
+}
+
+model Usuario {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  nombre    String
+  rol       Rol      @default(operador)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Cliente {
@@ -48,9 +59,9 @@ model Contrato {
   cliente Cliente @relation(fields: [clienteId], references: [id])
   moto    Moto    @relation(fields: [motoId], references: [id])
 
-  pagos    Pago[]
-  alertas  Alerta[]
-  facturas Factura[]
+  pagos     Pago[]
+  facturas  Factura[]
+  alertas   Alerta[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -67,8 +78,8 @@ model Pago {
   vencimientoAt DateTime?
 
   contrato Contrato @relation(fields: [contratoId], references: [id])
-  alertas  Alerta[]
   factura  Factura?
+  alertas  Alerta[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -81,14 +92,12 @@ model Factura {
   numero       String
   monto        Int
   estado       String
-  emitidaAt    DateTime
+  emitidaAt   DateTime
 
-  // AFIP
   cae          String?
   caeVto       DateTime?
-  afipEstado   String?
+  afipEstado   String   @default("pendiente")
 
-  // EMAIL
   emailEnviado Boolean  @default(false)
   emailAt      DateTime?
 
@@ -106,19 +115,9 @@ model Alerta {
   contratoId String?
   pagoId     String?
 
-  contrato Contrato? @relation(fields: [contratoId], references: [id])
-  pago     Pago?     @relation(fields: [pagoId], references: [id])
+  contrato   Contrato? @relation(fields: [contratoId], references: [id])
+  pago       Pago?     @relation(fields: [pagoId], references: [id])
 
-  leida     Boolean  @default(false)
+  leida      Boolean  @default(false)
   createdAt DateTime @default(now())
-}
-
-model Usuario {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  nombre       String
-  role         Role     @default(operador)
-  passwordHash String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
 }
