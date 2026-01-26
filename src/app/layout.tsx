@@ -32,15 +32,22 @@ export default function RootLayout({
         <nav
           style={{
             display: "flex",
-            gap: 16,
-            padding: 16,
-            borderBottom: "1px solid #ddd",
             alignItems: "center",
+            gap: 12,
+            padding: "14px 18px",
+            borderBottom: "1px solid #e5e5e5",
+            background: "#fafafa",
           }}
         >
+          <span style={{ fontWeight: 700 }}>Alquiler Motos</span>
+
           <a href="/">Dashboard</a>
-          <a href="/contratos">Contratos</a>
           <a href="/pagos">Pagos</a>
+          <a href="/facturas">Facturas</a>
+          <a href="/alertas">Alertas</a>
+          <a href="/dashboard/charts">Graficos</a>
+          <a href="/dashboard/charts/mes">Mes a mes</a>
+          <a href="/api/export/pagos">Export CSV</a>
 
           <div style={{ marginLeft: "auto" }}>
             <AlertDropdown />
