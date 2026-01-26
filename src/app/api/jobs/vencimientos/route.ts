@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { sendEmail } from "@/lib/email";
 
 export async function POST() {
   const ahora = new Date();
@@ -8,6 +9,14 @@ export async function POST() {
       estado: "pendiente",
       vencimientoAt: {
         lt: ahora,
+      },
+    },
+    include: {
+      contrato: {
+        include: {
+          cliente: true,
+          moto: true,
+        },
       },
     },
   });
@@ -28,6 +37,15 @@ export async function POST() {
         pagoId: pago.id,
       },
     });
+
+    const cliente = pago.contrato?.cliente;
+    if (cliente?.email) {
+      await sendEmail(
+        cliente.email,
+        "Pago vencido",
+        `<p>Tu pago #${pago.id} está vencido.</p>`
+      );
+    }
 
     marcados++;
   }

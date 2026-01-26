@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -9,8 +10,16 @@ async function main() {
   await prisma.contrato.deleteMany();
   await prisma.moto.deleteMany();
   await prisma.cliente.deleteMany();
+  await prisma.usuario.deleteMany();
 
   console.log("🌱 Creando clientes...");
+  console.log("🌱 Creando usuario admin...");
+  const adminEmail = process.env.ADMIN_EMAIL || "admin@example.com";
+  const adminPass = process.env.ADMIN_PASSWORD || "admin123";
+  const hash = await bcrypt.hash(adminPass, 10);
+  await prisma.usuario.create({
+    data: { email: adminEmail, nombre: "Admin", role: "admin", passwordHash: hash },
+  });
   const cliente1 = await prisma.cliente.create({
     data: {
       nombre: "Juan Pérez",
@@ -131,6 +140,7 @@ async function main() {
   console.log(`   - 2 motos`);
   console.log(`   - 2 contratos`);
   console.log(`   - 3 pagos`);
+  console.log(`   - 1 usuario (admin)`);
   console.log(`\n🚀 Próximos pasos:`);
   console.log(`   1. Ejecuta: curl -X POST http://localhost:3000/api/jobs/contratos-por-vencer`);
   console.log(`   2. Ejecuta: curl -X POST http://localhost:3000/api/jobs/vencimientos`);

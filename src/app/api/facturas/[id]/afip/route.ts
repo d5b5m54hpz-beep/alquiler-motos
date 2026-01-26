@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
+import { afip } from '@/lib/afip';
 
 export async function POST(
   req: NextRequest,
@@ -28,21 +29,49 @@ export async function POST(
       );
     }
 
-    // Simular generación de CAE (14 dígitos)
-    const cae = Math.random().toString().substring(2, 16).padStart(14, '0');
+    if (!afip) {
+      return NextResponse.json(
+        { error: 'AFIP no configurado' },
+        { status: 400 }
+      );
+    }
 
-    // Calcular vencimiento CAE (60 días desde hoy)
-    const caeVto = new Date();
-    caeVto.setDate(caeVto.getDate() + 60);
+    // Emitir comprobante real en AFIP (Factura C - tipo 11)
+    const total = factura.monto;
+    const today = new Date();
+    const fechaCbte = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
 
-    // Actualizar factura con datos AFIP
+    const voucher = await afip.ElectronicBilling.createVoucher({
+      CantReg: 1,
+      PtoVta: 1,
+      CbteTipo: 11,
+      Concepto: 1,
+      DocTipo: 99,
+      DocNro: 0,
+      CbteDesde: Number(factura.numero),
+      CbteHasta: Number(factura.numero),
+      CbteFch: fechaCbte,
+      ImpTotal: total,
+      ImpTotConc: 0,
+      ImpNeto: total,
+      ImpOpEx: 0,
+      ImpIVA: 0,
+      ImpTrib: 0,
+      MonId: 'PES',
+      MonCotiz: 1,
+    });
+
+    const cae = voucher.CAE;
+    const caeVtoStr = voucher.CAEFchVto; // YYYYMMDD
+    const caeVto = new Date(
+      Number(caeVtoStr.substring(0, 4)),
+      Number(caeVtoStr.substring(4, 6)) - 1,
+      Number(caeVtoStr.substring(6, 8))
+    );
+
     const facturaActualizada = await prisma.factura.update({
       where: { id },
-      data: {
-        afipEstado: 'enviado',
-        cae,
-        caeVto,
-      } as any,
+      data: { afipEstado: 'enviado', cae, caeVto } as any,
     });
 
     // Crear alerta fiscal

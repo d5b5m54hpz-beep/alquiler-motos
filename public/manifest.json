@@ -1,0 +1,9 @@
+{
+  "name": "Alquiler Motos",
+  "short_name": "Motos",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111827",
+  "icons": []
+}
