@@ -53,6 +53,7 @@ export default function RootLayout({
             <a href="/pagos">Pagos</a>
             <a href="/facturas">Facturas</a>
             <a href="/alertas">Alertas</a>
+            <a href="/usuarios">Usuarios</a>
             <a href="/dashboard/charts">Graficos</a>
             <a href="/dashboard/charts/mes">Mes a mes</a>
             <a href="/api/export/pagos">Export CSV</a>
