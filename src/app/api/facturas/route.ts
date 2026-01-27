@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/authz";
 
-export async function GET() {
-  await requireRole(["admin", "auditor"]);
+export async function GET(req: Request) {
+  const authError = await requireRole(["admin", "auditor"], req);
+  if (authError) return authError;
 
   const facturas = await prisma.factura.findMany({
     include: {

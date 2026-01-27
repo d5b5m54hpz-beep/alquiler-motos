@@ -34,3 +34,12 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Retool Integration
+
+To allow Retool to query protected read-only endpoints (e.g. `/api/pagos`, `/api/facturas`), configure a service API key:
+
+- Set the environment variable `RETOOL_API_KEY` in your deployment (e.g. in Vercel Project Settings → Environment Variables).
+- In your Retool REST resource pointing to your public base URL, add the header `x-api-key: <RETOOL_API_KEY>` (or use `Authorization: Bearer <RETOOL_API_KEY>`).
+
+With a valid key, endpoints that permit the `auditor` role will authorize without a browser session. Mutating endpoints remain restricted to `admin`/`operador`.

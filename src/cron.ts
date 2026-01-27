@@ -2,7 +2,19 @@ import cron from "node-cron";
 
 // IMPORTANTE:
 // estos endpoints YA EXISTEN en tu app
-const BASE_URL = "http://localhost:3000";
+function getBaseUrl() {
+  if (process.env.BASE_URL) return process.env.BASE_URL;
+  const prod = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const preview = process.env.VERCEL_BRANCH_URL;
+  const vercel = process.env.VERCEL_URL;
+  const origin = prod || preview || vercel;
+  if (origin) return `https://${origin}`;
+  const protocol = process.env.__NEXT_EXPERIMENTAL_HTTPS ? "https" : "http";
+  const port = process.env.PORT || 3000;
+  return `${protocol}://localhost:${port}`;
+}
+
+const BASE_URL = getBaseUrl();
 
 // Job: pagos vencidos
 cron.schedule("0 3 * * *", async () => {

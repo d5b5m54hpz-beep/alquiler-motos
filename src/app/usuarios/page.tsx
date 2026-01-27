@@ -1,6 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Usuario = {
   id: string;
@@ -21,91 +39,183 @@ export default function UsuariosPage() {
 
   async function fetchUsuarios() {
     setLoading(true);
-    const res = await fetch("/api/usuarios", { cache: "no-store" });
-    const data = await res.json();
-    setUsuarios(data);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/usuarios", { cache: "no-store" });
+      if (!res.ok) {
+        console.error("Error en API:", res.status, res.statusText);
+        setUsuarios([]);
+        setLoading(false);
+        return;
+      }
+      const data = await res.json();
+      setUsuarios(data || []);
+    } catch (error) {
+      console.error("Error fetching usuarios:", error);
+      setUsuarios([]);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function crearUsuario() {
-    await fetch("/api/usuarios", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, nombre, password, rol }),
-    });
-    setEmail("");
-    setNombre("");
-    setPassword("");
-    setRol("operador");
-    fetchUsuarios();
+    if (!email || !nombre || !password) {
+      alert("Completa todos los campos");
+      return;
+    }
+    try {
+      const res = await fetch("/api/usuarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, nombre, password, rol }),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        alert("Error: " + (error.error || "No se pudo crear el usuario"));
+        return;
+      }
+      setEmail("");
+      setNombre("");
+      setPassword("");
+      setRol("operador");
+      await fetchUsuarios();
+    } catch (error) {
+      console.error("Error creating usuario:", error);
+      alert("Error al crear usuario");
+    }
   }
 
   async function actualizarUsuario(id: string, data: Partial<Usuario>) {
-    await fetch(`/api/usuarios/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    fetchUsuarios();
+    try {
+      const res = await fetch(`/api/usuarios/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        alert("Error al actualizar usuario");
+        return;
+      }
+      await fetchUsuarios();
+    } catch (error) {
+      console.error("Error updating usuario:", error);
+      alert("Error al actualizar usuario");
+    }
   }
 
   useEffect(() => {
     fetchUsuarios();
   }, []);
 
-  if (loading) return <p>Cargando usuarios…</p>;
+  if (loading) {
+    return (
+      <div className="container mx-auto py-8">
+        <p className="text-muted-foreground">Cargando usuarios…</p>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: 24 }}>
-      <h1>Usuarios</h1>
+    <div className="container mx-auto py-8 space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Usuarios</h1>
+        <p className="text-muted-foreground">
+          Gestiona los usuarios del sistema y sus roles
+        </p>
+      </div>
 
-      <h2>Crear usuario</h2>
-      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-      <input placeholder="Nombre" value={nombre} onChange={e => setNombre(e.target.value)} />
-      <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-      <select value={rol} onChange={e => setRol(e.target.value as any)}>
-        <option value="admin">Admin</option>
-        <option value="operador">Operador</option>
-        <option value="auditor">Auditor</option>
-      </select>
-      <button onClick={crearUsuario}>Crear</button>
+      <Card>
+        <CardHeader>
+          <CardTitle>Crear nuevo usuario</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-4">
+            <Input
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full sm:w-64"
+            />
+            <Input
+              placeholder="Nombre"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              className="w-full sm:w-64"
+            />
+            <Input
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full sm:w-64"
+            />
+            <Select value={rol} onValueChange={(val) => setRol(val as any)}>
+              <SelectTrigger className="w-full sm:w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="operador">Operador</SelectItem>
+                <SelectItem value="auditor">Auditor</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={crearUsuario}>Crear Usuario</Button>
+          </div>
+        </CardContent>
+      </Card>
 
-      <h2 style={{ marginTop: 32 }}>Listado</h2>
-      <table border={1} cellPadding={8}>
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Nombre</th>
-            <th>Rol</th>
-            <th>Activo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {usuarios.map(u => (
-            <tr key={u.id}>
-              <td>{u.email}</td>
-              <td>{u.nombre}</td>
-              <td>
-                <select
-                  value={u.rol}
-                  onChange={e => actualizarUsuario(u.id, { rol: e.target.value as any })}
-                >
-                  <option value="admin">Admin</option>
-                  <option value="operador">Operador</option>
-                  <option value="auditor">Auditor</option>
-                </select>
-              </td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={u.activo}
-                  onChange={e => actualizarUsuario(u.id, { activo: e.target.checked })}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Card>
+        <CardHeader>
+          <CardTitle>Listado de usuarios</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Email</TableHead>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Rol</TableHead>
+                <TableHead>Activo</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {usuarios.map((u) => (
+                <TableRow key={u.id}>
+                  <TableCell className="font-medium">{u.email}</TableCell>
+                  <TableCell>{u.nombre}</TableCell>
+                  <TableCell>
+                    <Select
+                      value={u.rol}
+                      onValueChange={(val) =>
+                        actualizarUsuario(u.id, { rol: val as any })
+                      }
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="operador">Operador</SelectItem>
+                        <SelectItem value="auditor">Auditor</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <input
+                      type="checkbox"
+                      checked={u.activo}
+                      onChange={(e) =>
+                        actualizarUsuario(u.id, { activo: e.target.checked })
+                      }
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
+

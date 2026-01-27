@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/authz";
 
-export async function GET() {
-  await requireRole(["admin", "operador", "auditor"]);
+export async function GET(req: Request) {
+  const authError = await requireRole(["admin", "operador", "auditor"], req);
+  if (authError) return authError;
 
   const pagos = await prisma.pago.findMany({
     include: {
@@ -17,7 +18,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  await requireRole(["admin", "operador"]);
+  const authError = await requireRole(["admin", "operador"], req);
+  if (authError) return authError;
 
   const body = await req.json();
   const { contratoId, monto, metodo, referencia } = body ?? {};

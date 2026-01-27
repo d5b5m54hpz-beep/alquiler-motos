@@ -2,8 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/authz";
 import bcrypt from "bcrypt";
 
-export async function GET() {
-  await requireRole(["admin"]);
+export async function GET(req: Request) {
+  const authError = await requireRole(["admin"], req);
+  if (authError) return authError;
 
   const usuarios = await prisma.usuario.findMany({
     orderBy: { createdAt: "desc" },
@@ -21,7 +22,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  await requireRole(["admin"]);
+  const authError = await requireRole(["admin"], req);
+  if (authError) return authError;
 
   const body = await req.json();
   const { email, nombre, password, rol } = body;
