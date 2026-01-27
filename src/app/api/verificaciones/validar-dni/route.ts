@@ -48,6 +48,23 @@ export async function POST(req: Request) {
     // Perform Verifik KYC validation
     const kyc = await performKYC(cleaned, nombre);
 
+    // Guardar en historial
+    const verificacionAlerta = await prisma.alerta.create({
+      data: {
+        tipo: "VERIFICACION_DNI",
+        mensaje: `Verificación DNI: ${nombre || cleaned} - ${kyc.verified ? "Aprobado" : "Rechazado"} (Riesgo: ${kyc.riskLevel})`,
+        dniVerificacion: {
+          dni: cleaned,
+          nombre,
+          email,
+          verificado: kyc.verified,
+          riesgoNivel: kyc.riskLevel,
+          razonRechazo: !kyc.verified ? kyc.details.verification.error : null,
+          detalles: kyc.details as any,
+        } as any,
+      },
+    });
+
     if (!kyc.verified) {
       return Response.json(
         {
@@ -55,6 +72,7 @@ export async function POST(req: Request) {
           error: "No se pudo verificar el DNI",
           riskLevel: kyc.riskLevel,
           details: kyc.details,
+          verificacionId: verificacionAlerta.id,
         },
         { status: 400 }
       );
@@ -67,6 +85,7 @@ export async function POST(req: Request) {
           valid: false,
           error: "DNI reporta riesgo alto. Contactar a administrador.",
           riskLevel: kyc.riskLevel,
+          verificacionId: verificacionAlerta.id,
         },
         { status: 403 }
       );

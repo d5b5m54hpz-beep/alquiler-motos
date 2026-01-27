@@ -119,5 +119,9 @@ model Alerta {
   pago       Pago?     @relation(fields: [pagoId], references: [id])
 
   leida      Boolean  @default(false)
+  
+  // Para verificaciones DNI
+  dniVerificacion Json?
+  
   createdAt DateTime @default(now())
 }
