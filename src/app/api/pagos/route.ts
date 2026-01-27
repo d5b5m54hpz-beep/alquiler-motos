@@ -1,9 +1,24 @@
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/authz";
 
-export async function GET(req: Request) {
-  const authError = await requireRole(["admin", "operador", "auditor"], req);
-  if (authError) return authError;
+export async function GET() {
+  const { error, role, userId } = await requireRole(["admin", "operador", "cliente"]);
+  if (error) return error;
+
+  if (role === "cliente") {
+    const cliente = await prisma.cliente.findUnique({ where: { userId: userId! } });
+    if (!cliente) return Response.json([]);
+    const pagos = await prisma.pago.findMany({
+      where: { contrato: { clienteId: cliente.id } },
+      include: {
+        contrato: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return Response.json(pagos);
+  }
 
   const pagos = await prisma.pago.findMany({
     include: {
@@ -18,8 +33,8 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const authError = await requireRole(["admin", "operador"], req);
-  if (authError) return authError;
+  const { error } = await requireRole(["admin", "operador"]);
+  if (error) return error;
 
   const body = await req.json();
   const { contratoId, monto, metodo, referencia } = body ?? {};

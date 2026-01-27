@@ -3,8 +3,8 @@ import { sendEmail } from "@/lib/email";
 import { requireRole } from "@/lib/authz";
 
 export async function POST() {
-  const authError = await requireRole(["admin"]);
-  if (authError) return authError;
+  const { error } = await requireRole(["admin"]);
+  if (error) return error;
 
   const ahora = new Date();
 

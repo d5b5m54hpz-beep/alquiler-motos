@@ -5,34 +5,68 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function RegistroPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+
     setLoading(true);
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    try {
+      // Create user via API
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    setLoading(false);
+      const data = await res.json();
 
-    if (result?.ok) {
-      router.push("/");
-    } else {
-      setError("Email o contraseña incorrectos");
+      if (!res.ok) {
+        setError(data.error || "Error al crear la cuenta");
+        setLoading(false);
+        return;
+      }
+
+      // Auto-login after registration
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      setLoading(false);
+
+      if (result?.ok) {
+        router.push("/");
+      } else {
+        router.push("/login");
+      }
+    } catch (err) {
+      setError("Error al crear la cuenta");
+      setLoading(false);
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleSignup = async () => {
     setLoading(true);
     await signIn("google", { callbackUrl: "/" });
   };
@@ -61,7 +95,7 @@ export default function LoginPage() {
           marginBottom: 8,
           color: "#1a1a1a",
         }}>
-          Bienvenido
+          Crear cuenta
         </h1>
         <p style={{
           textAlign: "center",
@@ -69,12 +103,12 @@ export default function LoginPage() {
           marginBottom: 32,
           fontSize: 14,
         }}>
-          Inicia sesión en tu cuenta
+          Únete a nosotros hoy
         </p>
 
         {/* Google OAuth Button */}
         <button
-          onClick={handleGoogleLogin}
+          onClick={handleGoogleSignup}
           disabled={loading}
           style={{
             width: "100%",
@@ -104,7 +138,7 @@ export default function LoginPage() {
               <path d="M9 3.6c1.3 0 2.5.4 3.4 1.3L15 2.3A9 9 0 0 0 1 5l3 2.4a5.4 5.4 0 0 1 5-3.7z" fill="#EA4335"/>
             </g>
           </svg>
-          Continuar con Google
+          Registrarse con Google
         </button>
 
         <div style={{ 
@@ -118,7 +152,39 @@ export default function LoginPage() {
           <div style={{ flex: 1, height: 1, backgroundColor: "#e0e0e0" }} />
         </div>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleRegister}>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{
+              display: "block",
+              marginBottom: 6,
+              fontSize: 13,
+              fontWeight: 500,
+              color: "#333",
+            }}>
+              Nombre completo
+            </label>
+            <input
+              type="text"
+              placeholder="Juan Pérez"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              disabled={loading}
+              style={{ 
+                width: "100%", 
+                padding: "10px 12px",
+                boxSizing: "border-box",
+                border: "1px solid #ddd",
+                borderRadius: 8,
+                fontSize: 14,
+                outline: "none",
+                transition: "border-color 0.2s",
+              }}
+              onFocus={(e) => e.currentTarget.style.borderColor = "#667eea"}
+              onBlur={(e) => e.currentTarget.style.borderColor = "#ddd"}
+            />
+          </div>
+
           <div style={{ marginBottom: 16 }}>
             <label style={{
               display: "block",
@@ -151,7 +217,7 @@ export default function LoginPage() {
             />
           </div>
 
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 16 }}>
             <label style={{
               display: "block",
               marginBottom: 6,
@@ -163,9 +229,41 @@ export default function LoginPage() {
             </label>
             <input
               type="password"
-              placeholder="••••••••"
+              placeholder="Mínimo 6 caracteres"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={loading}
+              style={{ 
+                width: "100%", 
+                padding: "10px 12px",
+                boxSizing: "border-box",
+                border: "1px solid #ddd",
+                borderRadius: 8,
+                fontSize: 14,
+                outline: "none",
+                transition: "border-color 0.2s",
+              }}
+              onFocus={(e) => e.currentTarget.style.borderColor = "#667eea"}
+              onBlur={(e) => e.currentTarget.style.borderColor = "#ddd"}
+            />
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <label style={{
+              display: "block",
+              marginBottom: 6,
+              fontSize: 13,
+              fontWeight: 500,
+              color: "#333",
+            }}>
+              Confirmar contraseña
+            </label>
+            <input
+              type="password"
+              placeholder="Repite tu contraseña"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
               disabled={loading}
               style={{ 
@@ -216,7 +314,7 @@ export default function LoginPage() {
             onMouseEnter={(e) => !loading && (e.currentTarget.style.backgroundColor = "#5568d3")}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#667eea")}
           >
-            {loading ? "Cargando..." : "Iniciar sesión"}
+            {loading ? "Creando cuenta..." : "Crear cuenta"}
           </button>
         </form>
 
@@ -226,16 +324,16 @@ export default function LoginPage() {
           fontSize: 14,
           color: "#666",
         }}>
-          ¿No tienes una cuenta?{" "}
+          ¿Ya tienes cuenta?{" "}
           <Link 
-            href="/registro" 
+            href="/login" 
             style={{
               color: "#667eea",
               textDecoration: "none",
               fontWeight: 600,
             }}
           >
-            Crear cuenta
+            Iniciar sesión
           </Link>
         </div>
       </div>

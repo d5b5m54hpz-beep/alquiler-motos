@@ -24,5 +24,6 @@ export const config = {
     "/alertas/:path*",
     "/dashboard/:path*",
     "/usuarios/:path*",
+    "/api/:path*",
   ],
 };

@@ -6,13 +6,13 @@ const prisma = new PrismaClient();
 async function main() {
   const password = await bcrypt.hash("admin123", 10);
 
-  await prisma.usuario.create({
+  await prisma.user.create({
     data: {
       email: "admin@demo.com",
-      nombre: "Admin",
+      name: "Admin",
       password: password,
-      rol: "admin",
-      activo: true,
+      role: "admin",
+      provider: "credentials",
     },
   });
 }

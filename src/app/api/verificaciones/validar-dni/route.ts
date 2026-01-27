@@ -101,34 +101,13 @@ export async function POST(req: Request) {
       });
     }
 
-    // Create cliente if valid and not just checking
-    if (nombre) {
-      const cliente = await prisma.cliente.create({
-        data: {
-          dni: cleaned,
-          nombre,
-          email: email || null,
-          telefono: "",
-        },
-      });
-
-      return Response.json(
-        {
-          valid: true,
-          verified: true,
-          riskLevel: kyc.riskLevel,
-          cliente,
-          message: "Cliente creado exitosamente",
-        },
-        { status: 201 }
-      );
-    }
-
+    // Note: Clientes are now auto-created via User authentication flow
+    // This endpoint only validates DNI data, not create clientes manually
     return Response.json({
       valid: true,
       verified: true,
       riskLevel: kyc.riskLevel,
-      message: "DNI válido y verificado. Proporciona nombre para crear cliente.",
+      message: "DNI válido y verificado (cliente no creado)",
     });
   } catch (error) {
     console.error("Error validando DNI:", error);

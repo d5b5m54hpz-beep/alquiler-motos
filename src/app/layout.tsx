@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AlertDropdown } from "./components/AlertDropdown";
+import { UserProfileButton } from "./components/UserProfileButton";
 import { Providers } from "./providers";
 import "@/cron";
 
@@ -59,8 +60,9 @@ export default function RootLayout({
             <a href="/dashboard/charts/mes" style={{ color: "#fff", textDecoration: "none" }}>Mes a mes</a>
             <a href="/api/export/pagos" style={{ color: "#fff", textDecoration: "none" }}>Export CSV</a>
 
-            <div style={{ marginLeft: "auto" }}>
+            <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 16 }}>
               <AlertDropdown />
+              <UserProfileButton />
             </div>
           </nav>
 

@@ -82,6 +82,68 @@ Content-Type: application/json
 
 **Respuesta:** Crea el cliente si DNI es válido (status 201)
 
+### Extraer y Verificar Licencia de Conducir (Argentina)
+```bash
+POST /api/verificaciones/licencia
+Content-Type: application/json
+
+{
+  "frontImage": "data:image/jpeg;base64,/9j/4AAQ...", // o URL pública
+  "backImage": "data:image/jpeg;base64,/9j/4AAQ...",
+  "fields": ["Full name", "License number", "Date of expiry", "Category"],
+  "expected": {
+    "dni": "12345678",
+    "fullName": "Juan Perez",
+    "licenseNumber": "A1234567",
+    "expiryDate": "2030-12-31"
+  }
+}
+```
+
+**Respuesta:**
+```json
+{
+  "ok": true,
+  "data": { /* campos extraídos por Verifik Prompt Template DRAR */ },
+  "matches": true,
+  "mismatches": []
+}
+```
+
+Este endpoint usa el template DRAR (Licencia Argentina) de Verifik y permite comparar contra valores esperados.
+
+### Guardar Resultado de Licencia
+```bash
+POST /api/verificaciones/licencia/guardar
+Content-Type: application/json
+
+{
+  "clienteId": "cmkuzfucr0001nyvldital1h9", // opcional: referencia para auditoría
+  "frontImage": "data:image/jpeg;base64,/9j/4AAQ...",
+  "backImage": "data:image/jpeg;base64,/9j/4AAQ...",
+  "fields": ["Full name","License number","Date of expiry","Category"],
+  "expected": {
+    "dni": "12345678",
+    "fullName": "Juan Perez",
+    "licenseNumber": "A1234567",
+    "expiryDate": "2030-12-31"
+  }
+}
+```
+
+**Respuesta:**
+```json
+{
+  "ok": true,
+  "data": { /* campos extraídos */ },
+  "matches": true,
+  "mismatches": [],
+  "alertaId": "cmxyz..." // ID del registro de auditoría
+}
+```
+
+El resultado se guarda en la tabla de `alertas` (`tipo: VERIFICACION_LICENCIA`) con el payload en `dniVerificacion`.
+
 ## Integración en Retool
 
 ### Query de Validación
@@ -132,6 +194,8 @@ Si Verifik no está configurado o está down:
 - ✅ Se verifica duplicados en BD
 - ❌ No se valida contra RENAPER/Antecedentes
 - ⚠️ Se marca como `riskLevel: 'LOW'` (permisivo)
+
+Para extracción de licencia sin Verifik, se requiere integrar una OCR alternativa; recomendamos usar Verifik para máxima precisión.
 
 Para producción recomendamos tener Verifik habilitado.
 

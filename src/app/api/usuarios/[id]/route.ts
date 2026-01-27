@@ -5,20 +5,20 @@ export async function PATCH(
   req: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const authError = await requireRole(["admin"], req);
-  if (authError) return authError;
+  const { error } = await requireRole(["admin"]);
+  if (error) return error;
 
   const body = await req.json();
-  const { rol, activo } = body;
+  const { role, phoneVerifiedAt } = body;
   const { id } = await context.params;
 
-  const usuario = await prisma.usuario.update({
+  const user = await prisma.user.update({
     where: { id },
     data: {
-      rol,
-      activo,
+      role,
+      phoneVerifiedAt: phoneVerifiedAt ? new Date(phoneVerifiedAt) : undefined,
     },
   });
 
-  return Response.json(usuario);
+  return Response.json(user);
 }

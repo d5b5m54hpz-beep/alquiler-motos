@@ -6,36 +6,36 @@ const prisma = new PrismaClient();
 async function main() {
   // Operador
   const opHash = await bcrypt.hash("op123", 10);
-  await prisma.usuario.upsert({
+  await prisma.user.upsert({
     where: { email: "operador@demo.com" },
     update: {},
     create: {
       email: "operador@demo.com",
-      nombre: "Operador Demo",
+      name: "Operador Demo",
       password: opHash,
-      rol: "operador",
-      activo: true,
+      role: "operador",
+      provider: "credentials",
     },
   });
   console.log("✅ operador@demo.com / op123");
 
-  // Auditor
-  const audHash = await bcrypt.hash("aud123", 10);
-  await prisma.usuario.upsert({
-    where: { email: "auditor@demo.com" },
+  // Admin
+  const adminHash = await bcrypt.hash("admin123", 10);
+  await prisma.user.upsert({
+    where: { email: "admin@demo.com" },
     update: {},
     create: {
-      email: "auditor@demo.com",
-      nombre: "Auditor Demo",
-      password: audHash,
-      rol: "auditor",
-      activo: true,
+      email: "admin@demo.com",
+      name: "Admin Demo",
+      password: adminHash,
+      role: "admin",
+      provider: "credentials",
     },
   });
-  console.log("✅ auditor@demo.com / aud123");
+  console.log("✅ admin@demo.com / admin123");
 
-  const users = await prisma.usuario.findMany({
-    select: { email: true, rol: true, activo: true },
+  const users = await prisma.user.findMany({
+    select: { email: true, role: true, provider: true },
   });
   console.log("\n📋 Todos los usuarios:");
   console.table(users);

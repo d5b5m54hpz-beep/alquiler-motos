@@ -26,14 +26,29 @@
 
 3. **Guardar el recurso**
 
-## Endpoints Disponibles
-
-### Públicos (Sin autenticación requerida)
-
-#### Clientes
 - `GET /api/clientes` - Listar todos los clientes
 - `GET /api/clientes/:id` - Obtener un cliente específico
 
+
+  ## UI de Retool: Verificación de Licencia
+
+  ### Widgets sugeridos
+  - FilePicker: `frontImageInput` (requerido)
+  - FilePicker: `backImageInput` (opcional)
+  - TextInput: `dniExpected`, `fullNameExpected`, `licenseExpected`
+  - DateInput: `expiryExpected`
+  - Button: `btnValidarLicencia`
+  - JSONViewer: `licenciaData`
+  - Table: `mismatchesTable`
+  - Tag: `estadoTag`
+
+  ### Query REST: `verificarLicencia`
+  - Método: `POST`
+  - URL: `/api/verificaciones/licencia`
+  - Header: `x-api-key: <tu_api_key>`
+  - Body (Transformer JS):
+
+  ```javascript
 #### Contratos
 - `GET /api/contratos` - Listar todos los contratos (incluye cliente y moto)
 - `GET /api/contratos/:id` - Obtener un contrato específico
@@ -58,6 +73,10 @@
 
 #### Dashboard y Reportes
 - `GET /api/dashboard` - Estadísticas generales del dashboard
+
+  ### Acción del botón `btnValidarLicencia`
+
+  ```javascript
 - `GET /api/dashboard/charts` - Datos para gráficos del dashboard
 - `GET /api/charts/ingresos` - Reporte de ingresos por período
 - `GET /api/charts/ingresos-mes` - Reporte de ingresos mensuales
@@ -75,6 +94,11 @@ Estos endpoints requieren rol `admin` o `operador` y no funcionan con el API key
 - `POST /api/usuarios` - Crear usuario
 - `PATCH /api/usuarios/:id` - Actualizar usuario
 - `DELETE /api/*` - Eliminar recursos
+
+  ### Validaciones UX
+  - Deshabilitar botón si `frontImageInput.files.length === 0`
+  - Mostrar preview de imágenes usando `frontImageInput.files[0].data`
+  - Resaltar inputs esperados si hay `mismatches` (e.g., marcar inválido)
 
 ## Ejemplo de Queries en Retool
 

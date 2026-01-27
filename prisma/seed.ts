@@ -10,18 +10,36 @@ async function main() {
   await prisma.contrato.deleteMany();
   await prisma.moto.deleteMany();
   await prisma.cliente.deleteMany();
-  await prisma.usuario.deleteMany();
+  await prisma.user.deleteMany();
 
-  console.log("🌱 Creando clientes...");
   console.log("🌱 Creando usuario admin...");
   const adminEmail = process.env.ADMIN_EMAIL || "admin@example.com";
   const adminPass = process.env.ADMIN_PASSWORD || "admin123";
   const hash = await bcrypt.hash(adminPass, 10);
-  await prisma.usuario.create({
-    data: { email: adminEmail, nombre: "Admin", rol: "admin", password: hash },
+  const adminUser = await prisma.user.create({
+    data: {
+      email: adminEmail,
+      name: "Admin",
+      role: "admin",
+      password: hash,
+      provider: "credentials",
+    },
   });
+
+  console.log("🌱 Creando usuarios cliente con sus clientes...");
+  const clienteUser1 = await prisma.user.create({
+    data: {
+      email: "juan@example.com",
+      name: "Juan Pérez",
+      role: "cliente",
+      provider: "credentials",
+      password: await bcrypt.hash("cliente123", 10),
+    },
+  });
+
   const cliente1 = await prisma.cliente.create({
     data: {
+      userId: clienteUser1.id,
       nombre: "Juan Pérez",
       dni: "12345678",
       telefono: "1123456789",
@@ -29,8 +47,19 @@ async function main() {
     },
   });
 
+  const clienteUser2 = await prisma.user.create({
+    data: {
+      email: "maria@example.com",
+      name: "María García",
+      role: "cliente",
+      provider: "credentials",
+      password: await bcrypt.hash("cliente123", 10),
+    },
+  });
+
   const cliente2 = await prisma.cliente.create({
     data: {
+      userId: clienteUser2.id,
       nombre: "María García",
       dni: "87654321",
       telefono: "1187654321",
@@ -136,11 +165,11 @@ async function main() {
 
   console.log("✅ BD populada exitosamente!");
   console.log(`\n📊 Datos creados:`);
-  console.log(`   - 2 clientes`);
+  console.log(`   - 2 usuarios cliente + 2 clientes`);
   console.log(`   - 2 motos`);
   console.log(`   - 2 contratos`);
   console.log(`   - 3 pagos`);
-  console.log(`   - 1 usuario (admin)`);
+  console.log(`   - 1 usuario admin`);
   console.log(`\n🚀 Próximos pasos:`);
   console.log(`   1. Ejecuta: curl -X POST http://localhost:3000/api/jobs/contratos-por-vencer`);
   console.log(`   2. Ejecuta: curl -X POST http://localhost:3000/api/jobs/vencimientos`);

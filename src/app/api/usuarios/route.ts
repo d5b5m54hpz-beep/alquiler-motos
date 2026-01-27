@@ -2,49 +2,51 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/authz";
 import bcrypt from "bcrypt";
 
-export async function GET(req: Request) {
-  const authError = await requireRole(["admin"], req);
-  if (authError) return authError;
+export async function GET() {
+  const { error } = await requireRole(["admin"]);
+  if (error) return error;
 
-  const usuarios = await prisma.usuario.findMany({
+  const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
       email: true,
-      nombre: true,
-      rol: true,
-      activo: true,
+      name: true,
+      role: true,
+      provider: true,
+      phoneVerifiedAt: true,
       createdAt: true,
     },
   });
 
-  return Response.json(usuarios);
+  return Response.json(users);
 }
 
 export async function POST(req: Request) {
-  const authError = await requireRole(["admin"], req);
-  if (authError) return authError;
+  const { error } = await requireRole(["admin"]);
+  if (error) return error;
 
   const body = await req.json();
-  const { email, nombre, password, rol } = body;
+  const { email, name, password, role } = body;
 
-  if (!email || !nombre || !password || !rol) {
+  if (!email || !name || !role) {
     return Response.json(
       { error: "Datos incompletos" },
       { status: 400 }
     );
   }
 
-  const hash = await bcrypt.hash(password, 10);
+  const hash = password ? await bcrypt.hash(password, 10) : null;
 
-  const usuario = await prisma.usuario.create({
+  const user = await prisma.user.create({
     data: {
       email,
-      nombre,
+      name,
       password: hash,
-      rol,
+      role,
+      provider: "credentials",
     },
   });
 
-  return Response.json(usuario, { status: 201 });
+  return Response.json(user, { status: 201 });
 }

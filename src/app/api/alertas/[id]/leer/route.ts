@@ -5,8 +5,8 @@ export async function POST(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authError = await requireRole(["admin", "operador"], _req);
-  if (authError) return authError;
+  const { error } = await requireRole(["admin", "operador"]);
+  if (error) return error;
 
   const { id } = await params;
 

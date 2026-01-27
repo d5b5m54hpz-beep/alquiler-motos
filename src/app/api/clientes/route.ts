@@ -1,8 +1,22 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
+import { requireRole } from "@/lib/authz";
 
 export async function GET() {
   try {
+    const { error, role, userId } = await requireRole(["admin", "operador", "cliente"]);
+    if (error) return error;
+
+    if (role === "cliente") {
+      const cliente = await prisma.cliente.findUnique({
+        where: { userId: userId! },
+        include: {
+          _count: { select: { contratos: true } },
+        },
+      });
+      return Response.json(cliente ? [cliente] : []);
+    }
+
     const clientes = await prisma.cliente.findMany({
       orderBy: { createdAt: "desc" },
       include: {
@@ -18,25 +32,6 @@ export async function GET() {
   }
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const { nombre, dni, telefono, email } = body;
-
-    if (!nombre || !dni) {
-      return new Response("Nombre y DNI son requeridos", { status: 400 });
-    }
-
-    const cliente = await prisma.cliente.create({
-      data: { nombre, dni, telefono, email },
-    });
-
-    return Response.json(cliente);
-  } catch (error: any) {
-    console.error(error);
-    if (error.code === "P2002") {
-      return new Response("DNI ya existe", { status: 400 });
-    }
-    return new Response("Error creating cliente", { status: 500 });
-  }
+export async function POST() {
+  return new Response("Metodo no permitido", { status: 405 });
 }

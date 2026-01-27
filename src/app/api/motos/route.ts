@@ -1,8 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
+import { requireRole } from "@/lib/authz";
 
 export async function GET() {
   try {
+    const { error } = await requireRole(["admin", "operador", "cliente"]);
+    if (error) return error;
+
     const motos = await prisma.moto.findMany({
       orderBy: { createdAt: "desc" },
       include: {
@@ -20,6 +24,9 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const { error } = await requireRole(["admin", "operador"]);
+    if (error) return error;
+
     const body = await req.json();
     const { marca, modelo, patente, anio, estado } = body;
 

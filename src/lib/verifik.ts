@@ -164,3 +164,62 @@ export async function performKYC(
     details: { verification, antecedents },
   };
 }
+
+/**
+ * Extract document fields using Verifik Prompt Templates.
+ * "template" should match Verifik's configured template name (e.g., "DRAR" for Argentine Driver's License).
+ * images.front/back can be base64 data URLs or public URLs, depending on Verifik API requirements.
+ */
+export async function extractDocumentWithTemplate(options: {
+  template: string;
+  fields?: string[];
+  images: { front: string; back?: string };
+}): Promise<{ success: boolean; data?: any; error?: string }> {
+  const apiKey = process.env.VERIFIK_API_KEY;
+  const secret = process.env.VERIFIK_SECRET;
+  const enabled = process.env.VERIFIK_ENABLED === 'true';
+
+  if (!enabled || !apiKey || !secret) {
+    return { success: false, error: 'Verifik not configured' };
+  }
+
+  try {
+    const response = await fetch('https://api.verifik.com/v1/prompt/extract', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+        'X-Secret': secret,
+      },
+      body: JSON.stringify({
+        template: options.template,
+        fields: options.fields,
+        images: options.images,
+      }),
+    });
+
+    if (!response.ok) {
+      return { success: false, error: `Verifik API error: ${response.status} ${response.statusText}` };
+    }
+
+    const data = await response.json();
+    return { success: true, data };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+/**
+ * Convenience helper for Argentine Driver's License extraction using Verifik template DRAR.
+ */
+export async function extractArgentineDriverLicense(params: {
+  frontImage: string;
+  backImage?: string;
+  fields?: string[];
+}) {
+  return extractDocumentWithTemplate({
+    template: 'DRAR',
+    fields: params.fields,
+    images: { front: params.frontImage, back: params.backImage },
+  });
+}
