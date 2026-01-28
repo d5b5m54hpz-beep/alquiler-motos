@@ -4,7 +4,7 @@ import Google from "next-auth/providers/google";
 import Apple from "next-auth/providers/apple";
 import Facebook from "next-auth/providers/facebook";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 const config = {
   providers: [
@@ -27,19 +27,36 @@ const config = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        console.log('🔐 Intentando login con:', credentials?.email);
+        console.log('📝 Password recibido:', credentials?.password);
+        
+        if (!credentials?.email || !credentials?.password) {
+          console.log('❌ Credenciales vacías');
+          return null;
+        }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         });
 
+        console.log('👤 Usuario encontrado:', user ? 'Sí' : 'No');
+
         if (!user) return null;
 
-        if (!user.password) return null;
+        if (!user.password) {
+          console.log('❌ Usuario sin password');
+          return null;
+        }
 
+        console.log('🗝️  Hash almacenado:', user.password);
+        console.log('🔑 Comparando passwords...');
         const ok = await bcrypt.compare(credentials.password as string, user.password);
+        console.log('✅ Password correcto:', ok);
+        
         if (!ok) return null;
 
+        console.log('✅ Login exitoso, role:', user.role);
+        
         return {
           id: user.id,
           email: user.email,
@@ -51,8 +68,31 @@ const config = {
     }),
   ],
   callbacks: {
+    async signIn({ user }) {
+      const email = user.email ?? '';
+
+      // SOLO estos emails pueden entrar al backend
+      const allowedAdmins = [
+        'dantebustos@gmail.com',
+        'admin@motolibre.com.ar',
+      ];
+
+      // Si el email está en la lista de admins, permitir acceso
+      if (allowedAdmins.includes(email)) {
+        return true;
+      }
+
+      // Si no está en la lista, verificar si es cliente existente
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      // Si es cliente existente o registro nuevo, permitir
+      return true;
+    },
+
     async jwt({ token, user, account, profile }) {
-      // For OAuth providers, upsert the user and set default role "cliente"
+      // For OAuth providers, upsert the user and set role based on whitelist
       if (account && profile) {
         const provider = account.provider;
         const email = (profile as any).email as string | undefined;
@@ -60,6 +100,14 @@ const config = {
         const image = (profile as any).picture as string | undefined;
 
         if (email) {
+          // Determinar role según whitelist
+          const allowedAdmins = [
+            'dantebustos@gmail.com',
+            'admin@motolibre.com.ar',
+          ];
+          
+          const role = allowedAdmins.includes(email) ? 'admin' : 'cliente';
+
           const upserted = await prisma.user.upsert({
             where: { email },
             update: {
@@ -72,7 +120,7 @@ const config = {
               name: name ?? email,
               image,
               provider,
-              role: "cliente",
+              role,
             },
           });
           token.role = upserted.role;
@@ -87,6 +135,7 @@ const config = {
       }
       return token;
     },
+
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).role = token.role;

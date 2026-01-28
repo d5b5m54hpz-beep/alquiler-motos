@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/authz";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function GET() {
   const { error } = await requireRole(["admin"]);

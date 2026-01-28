@@ -26,7 +26,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result?.ok) {
-      router.push("/");
+      router.push("/perfil");
     } else {
       setError("Email o contraseña incorrectos");
     }
@@ -34,7 +34,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    await signIn("google", { callbackUrl: "/" });
+    await signIn("google", { callbackUrl: "/perfil" });
   };
 
   return (
@@ -236,6 +236,25 @@ export default function LoginPage() {
             }}
           >
             Crear cuenta
+          </Link>
+        </div>
+
+        <div style={{
+          marginTop: 16,
+          textAlign: "center",
+          fontSize: 13,
+          color: "#999",
+        }}>
+          ¿Eres staff?{" "}
+          <Link 
+            href="/login-admin" 
+            style={{
+              color: "#3b82f6",
+              textDecoration: "none",
+              fontWeight: 600,
+            }}
+          >
+            Acceder al panel
           </Link>
         </div>
       </div>
