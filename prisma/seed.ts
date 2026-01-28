@@ -41,7 +41,6 @@ async function main() {
     data: {
       userId: clienteUser1.id,
       nombre: "Juan Pérez",
-      dni: "12345678",
       telefono: "1123456789",
       email: "juan@example.com",
     },
@@ -61,7 +60,6 @@ async function main() {
     data: {
       userId: clienteUser2.id,
       nombre: "María García",
-      dni: "87654321",
       telefono: "1187654321",
       email: "maria@example.com",
     },
