@@ -6,6 +6,11 @@ export default auth((req) => {
   const pathname = url.pathname;
   const session = (req as any).auth;
 
+  // CRITICAL: Skip middleware for API routes
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next();
+  }
+
   // Rutas públicas (no requieren autenticación)
   const publicRoutes = ["/login", "/login-admin", "/registro"];
   if (publicRoutes.includes(pathname)) {
@@ -66,12 +71,8 @@ export default auth((req) => {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * Match all request paths except static files and images
      */
-    '/((?!api/|_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };
