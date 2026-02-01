@@ -11,7 +11,14 @@ export async function GET(
     include: {
       contrato: {
         include: {
-          cliente: true,
+          cliente: {
+            select: {
+              id: true,
+              nombre: true,
+              dni: true,
+              email: true,
+            },
+          },
           moto: true,
         },
       },
@@ -19,14 +26,17 @@ export async function GET(
   });
 
   if (!factura) {
-    return new Response("Factura no encontrada", { status: 404 });
+    return new Response(JSON.stringify({ error: "Factura no encontrada" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const doc = new PDFDocument({ size: "A4", margin: 50 });
 
   const chunks: Buffer[] = [];
-  doc.on("data", (chunk) => chunks.push(chunk));
-  doc.on("end", () => {});
+  doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+
 
   // ENCABEZADO
   doc.fontSize(20).text("FACTURA", { align: "center" });
@@ -63,15 +73,16 @@ export async function GET(
 
   doc.end();
 
-  const pdfBuffer = await new Promise<Buffer>((resolve) => {
-    const buffer = Buffer.concat(chunks);
-    resolve(buffer);
+  const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", (err) => reject(err));
   });
 
   return new Response(pdfBuffer as any, {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="factura-${factura.numero}.pdf"`,
+      "Content-Length": String(pdfBuffer.length),
     },
   });
 }

@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function ChartsRedirect() {
+export default function DashboardRedirect() {
   const router = useRouter();
-  useEffect(() => router.replace("/admin/dashboard/charts"), [router]);
+  useEffect(() => router.replace("/admin/dashboard"), [router]);
   return null;
 }
