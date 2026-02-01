@@ -3,9 +3,9 @@ import PDFDocument from "pdfkit";
 
 export async function GET(
   _req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
+  const { id } = params;
   const factura = await prisma.factura.findUnique({
     where: { id },
     include: {
@@ -51,7 +51,6 @@ export async function GET(
   doc.fontSize(14).text("Cliente");
   doc.fontSize(12);
   doc.text(`Nombre: ${factura.contrato.cliente.nombre}`);
-  doc.text(`DNI: ${factura.contrato.cliente.dni}`);
   doc.moveDown();
 
   // MOTO
