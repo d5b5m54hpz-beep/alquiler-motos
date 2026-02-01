@@ -35,6 +35,10 @@ export default function PerfilPage() {
     showForm: false,
   });
 
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState<{ user: string; ai: string }[]>([]);
+  const [chatLoading, setChatLoading] = useState(false);
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
@@ -138,6 +142,34 @@ export default function PerfilPage() {
       setError("Error al cambiar contraseña");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!chatMessage.trim()) return;
+
+    setChatLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/grok", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: chatMessage }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setChatHistory([...chatHistory, { user: chatMessage, ai: data.reply }]);
+        setChatMessage("");
+      } else {
+        setError(data.error || "Error al enviar mensaje a Grok");
+      }
+    } catch (err) {
+      setError("Error al enviar mensaje a Grok");
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -511,6 +543,63 @@ export default function PerfilPage() {
           )}
         </section>
       )}
+
+      {/* Grok AI Chat */}
+      <section
+        style={{
+          background: "#fff",
+          border: "1px solid #e5e5e5",
+          borderRadius: 8,
+          padding: 24,
+          marginBottom: 24,
+        }}
+      >
+        <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 20, color: "#111" }}>
+          Asistente AI (Grok)
+        </h2>
+
+        <div style={{ marginBottom: 16, maxHeight: 300, overflowY: 'auto' }}>
+          {chatHistory.map((msg, idx) => (
+            <div key={idx} style={{ marginBottom: 12 }}>
+              <div style={{ fontWeight: 600, color: '#667eea' }}>Tú: {msg.user}</div>
+              <div style={{ marginTop: 4, color: '#374151' }}>Grok: {msg.ai}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input
+            type="text"
+            value={chatMessage}
+            onChange={(e) => setChatMessage(e.target.value)}
+            placeholder="Escribe tu mensaje..."
+            style={{
+              flex: 1,
+              padding: 10,
+              border: "1px solid #d1d5db",
+              borderRadius: 6,
+              fontSize: 14,
+            }}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          />
+          <button
+            onClick={sendMessage}
+            disabled={chatLoading}
+            style={{
+              padding: '10px 16px',
+              background: '#667eea',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 6,
+              fontSize: 14,
+              cursor: chatLoading ? 'not-allowed' : 'pointer',
+              opacity: chatLoading ? 0.6 : 1,
+            }}
+          >
+            {chatLoading ? 'Enviando...' : 'Enviar'}
+          </button>
+        </div>
+      </section>
 
     </div>
   );
