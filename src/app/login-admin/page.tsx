@@ -29,8 +29,7 @@ export default function LoginAdminPage() {
     }
 
     if (result?.ok) {
-      // Login exitoso, forzar navegación a dashboard
-      router.push('/dashboard');
+      router.push('/admin/dashboard');
       router.refresh();
     } else {
       setLoading(false);
