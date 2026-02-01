@@ -33,9 +33,7 @@ export default function FacturasPage() {
     <div style={{ padding: 24 }}>
       <h1>Facturas</h1>
 
-      {facturas.length === 0 && (
-        <p>No hay facturas emitidas.</p>
-      )}
+      {facturas.length === 0 && <p>No hay facturas emitidas.</p>}
 
       {facturas.length > 0 && (
         <table style={{ borderCollapse: "collapse", width: "100%" }}>
@@ -58,9 +56,7 @@ export default function FacturasPage() {
                 <td style={{ border: "1px solid #ddd", padding: 8 }}>{f.contrato.moto.patente}</td>
                 <td style={{ border: "1px solid #ddd", padding: 8 }}>${f.monto}</td>
                 <td style={{ border: "1px solid #ddd", padding: 8 }}>{f.estado}</td>
-                <td style={{ border: "1px solid #ddd", padding: 8 }}>
-                  {new Date(f.emitidaAt).toLocaleDateString()}
-                </td>
+                <td style={{ border: "1px solid #ddd", padding: 8 }}>{new Date(f.emitidaAt).toLocaleDateString()}</td>
                 <td style={{ border: "1px solid #ddd", padding: 8 }}>
                   <a
                     href={`/api/facturas/${f.id}/pdf`}

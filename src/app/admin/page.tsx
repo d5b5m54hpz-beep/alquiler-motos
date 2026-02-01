@@ -101,12 +101,7 @@ export default function DashboardPage() {
               <XAxis dataKey="fecha" />
               <YAxis />
               <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="total"
-                stroke="#2563eb"
-                strokeWidth={2}
-              />
+              <Line type="monotone" dataKey="total" stroke="#2563eb" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </div>

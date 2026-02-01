@@ -65,9 +65,7 @@ export default function PagosPage() {
     <div className="container mx-auto py-8 space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Pagos</h1>
-        <p className="text-muted-foreground">
-          Registrar y ver pagos de contratos
-        </p>
+        <p className="text-muted-foreground">Registrar y ver pagos de contratos</p>
       </div>
 
       <Card>
@@ -95,18 +93,14 @@ export default function PagosPage() {
                 <TableBody>
                   {pagos.map((p) => (
                     <TableRow key={p.id}>
-                      <TableCell className="font-medium">
-                        {formatMoney(p.monto)}
-                      </TableCell>
+                      <TableCell className="font-medium">{formatMoney(p.monto)}</TableCell>
                       <TableCell className="capitalize">{p.metodo}</TableCell>
                       <TableCell>
                         <span className="inline-flex items-center rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground uppercase">
                           {p.estado}
                         </span>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {formatDate(p.createdAt)}
-                      </TableCell>
+                      <TableCell className="text-muted-foreground">{formatDate(p.createdAt)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

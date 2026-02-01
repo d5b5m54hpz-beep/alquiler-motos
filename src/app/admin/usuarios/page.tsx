@@ -118,9 +118,7 @@ export default function UsuariosPage() {
     <div className="container mx-auto py-8 space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Usuarios</h1>
-        <p className="text-muted-foreground">
-          Gestiona los usuarios del sistema y sus roles
-        </p>
+        <p className="text-muted-foreground">Gestiona los usuarios del sistema y sus roles</p>
       </div>
 
       <Card>
@@ -129,25 +127,9 @@ export default function UsuariosPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
-            <Input
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full sm:w-64"
-            />
-            <Input
-              placeholder="Nombre"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              className="w-full sm:w-64"
-            />
-            <Input
-              placeholder="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full sm:w-64"
-            />
+            <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full sm:w-64" />
+            <Input placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full sm:w-64" />
+            <Input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full sm:w-64" />
             <Select value={rol} onValueChange={(val) => setRol(val as any)}>
               <SelectTrigger className="w-full sm:w-40">
                 <SelectValue />
@@ -183,12 +165,7 @@ export default function UsuariosPage() {
                   <TableCell className="font-medium">{u.email}</TableCell>
                   <TableCell>{u.nombre}</TableCell>
                   <TableCell>
-                    <Select
-                      value={u.rol}
-                      onValueChange={(val) =>
-                        actualizarUsuario(u.id, { rol: val as any })
-                      }
-                    >
+                    <Select value={u.rol} onValueChange={(val) => actualizarUsuario(u.id, { rol: val as any })}>
                       <SelectTrigger className="w-32">
                         <SelectValue />
                       </SelectTrigger>
@@ -200,14 +177,7 @@ export default function UsuariosPage() {
                     </Select>
                   </TableCell>
                   <TableCell>
-                    <input
-                      type="checkbox"
-                      checked={u.activo}
-                      onChange={(e) =>
-                        actualizarUsuario(u.id, { activo: e.target.checked })
-                      }
-                      className="h-4 w-4 rounded border-gray-300"
-                    />
+                    <input type="checkbox" checked={u.activo} onChange={(e) => actualizarUsuario(u.id, { activo: e.target.checked })} className="h-4 w-4 rounded border-gray-300" />
                   </TableCell>
                 </TableRow>
               ))}
@@ -218,4 +188,3 @@ export default function UsuariosPage() {
     </div>
   );
 }
-

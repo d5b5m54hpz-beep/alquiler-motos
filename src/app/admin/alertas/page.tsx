@@ -50,9 +50,7 @@ export default function AlertasPage() {
 
       {loading && <p>Cargando alertas…</p>}
 
-      {!loading && alertas.length === 0 && (
-        <p>No hay alertas.</p>
-      )}
+      {!loading && alertas.length === 0 && <p>No hay alertas.</p>}
 
       <ul style={{ listStyle: "none", padding: 0 }}>
         {alertas.map((a) => (
@@ -68,9 +66,7 @@ export default function AlertasPage() {
           >
             <strong>{a.tipo}</strong>
             <p style={{ margin: "6px 0" }}>{a.mensaje}</p>
-            <small>
-              {new Date(a.createdAt).toLocaleString()}
-            </small>
+            <small>{new Date(a.createdAt).toLocaleString()}</small>
 
             {!a.leida && (
               <div style={{ marginTop: 8 }}>
