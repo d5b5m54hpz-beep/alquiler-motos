@@ -1,0 +1,13 @@
+*** Begin Patch
+*** Update File: src/app/api/facturas/[id]/pdf/route.ts
+@@
+-          cliente: true,
++          cliente: {
++            select: {
++              id: true,
++              nombre: true,
++              dni: true,
++              email: true,
++            },
++          },
+*** End Patch
