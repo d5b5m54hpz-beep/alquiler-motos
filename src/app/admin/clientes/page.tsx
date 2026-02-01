@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 type Cliente = {
   id: string;
   nombre: string;
-  dni: string;
   telefono?: string;
   email?: string;
   _count?: { contratos: number };
@@ -20,7 +19,7 @@ export default function ClientesPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ nombre: "", dni: "", telefono: "", email: "" });
+  const [formData, setFormData] = useState({ nombre: "", telefono: "", email: "" });
 
   useEffect(() => {
     fetchClientes();
@@ -46,8 +45,8 @@ export default function ClientesPage() {
     setError(null);
     setMessage(null);
 
-    if (!formData.nombre.trim() || !formData.dni.trim()) {
-      setError("Nombre y DNI son obligatorios");
+    if (!formData.nombre.trim()) {
+      setError("Nombre es obligatorio");
       return;
     }
 
@@ -70,7 +69,7 @@ export default function ClientesPage() {
       await fetchClientes();
       setShowForm(false);
       setEditingId(null);
-      setFormData({ nombre: "", dni: "", telefono: "", email: "" });
+      setFormData({ nombre: "", telefono: "", email: "" });
       setMessage(editingId ? "Cliente actualizado" : "Cliente creado");
     } catch (err: any) {
       setError(err.message || "Error guardando");
@@ -82,7 +81,6 @@ export default function ClientesPage() {
   const handleEdit = (cliente: Cliente) => {
     setFormData({
       nombre: cliente.nombre,
-      dni: cliente.dni,
       telefono: cliente.telefono || "",
       email: cliente.email || "",
     });
@@ -111,7 +109,7 @@ export default function ClientesPage() {
             onClick={() => {
               setShowForm(!showForm);
               setEditingId(null);
-              setFormData({ nombre: "", dni: "", telefono: "", email: "" });
+              setFormData({ nombre: "", telefono: "", email: "" });
             }}
             style={{
               padding: "8px 16px",
@@ -156,21 +154,6 @@ export default function ClientesPage() {
                 type="text"
                 value={formData.nombre}
                 onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                required
-                style={{
-                  width: "100%",
-                  padding: 8,
-                  border: "1px solid #d1d5db",
-                  borderRadius: 4,
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ display: "block", marginBottom: 4, fontSize: 14 }}>DNI *</label>
-              <input
-                type="text"
-                value={formData.dni}
-                onChange={(e) => setFormData({ ...formData, dni: e.target.value })}
                 required
                 style={{
                   width: "100%",
@@ -236,7 +219,6 @@ export default function ClientesPage() {
           <thead>
             <tr style={{ background: "#f3f4f6", textAlign: "left" }}>
               <th style={{ padding: 12, borderBottom: "2px solid #e5e7eb" }}>Nombre</th>
-              <th style={{ padding: 12, borderBottom: "2px solid #e5e7eb" }}>DNI</th>
               <th style={{ padding: 12, borderBottom: "2px solid #e5e7eb" }}>Teléfono</th>
               <th style={{ padding: 12, borderBottom: "2px solid #e5e7eb" }}>Email</th>
               <th style={{ padding: 12, borderBottom: "2px solid #e5e7eb" }}>Contratos</th>
@@ -247,7 +229,6 @@ export default function ClientesPage() {
             {clientes.map((cliente) => (
               <tr key={cliente.id} style={{ borderBottom: "1px solid #e5e7eb" }}>
                 <td style={{ padding: 12 }}>{cliente.nombre}</td>
-                <td style={{ padding: 12 }}>{cliente.dni}</td>
                 <td style={{ padding: 12 }}>{cliente.telefono || "-"}</td>
                 <td style={{ padding: 12 }}>{cliente.email || "-"}</td>
                 <td style={{ padding: 12 }}>{cliente._count?.contratos || 0}</td>
