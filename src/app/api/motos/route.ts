@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
-// import { requireRole } from "@/lib/authz";
+import { requireRole } from "@/lib/authz";
 
 export async function GET() {
   try {
@@ -18,7 +18,7 @@ export async function GET() {
     return Response.json(motos);
   } catch (error) {
     console.error(error);
-    return new Response("Error fetching motos", { status: 500 });
+    return Response.json({ error: "Error fetching motos" }, { status: 500 });
   }
 }
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     const { marca, modelo, patente, anio, estado } = body;
 
     if (!marca || !modelo || !patente || !anio) {
-      return new Response("Marca, modelo, patente y año son requeridos", { status: 400 });
+      return Response.json({ error: "Marca, modelo, patente y año son requeridos" }, { status: 400 });
     }
 
     const moto = await prisma.moto.create({
@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error(error);
     if (error.code === "P2002") {
-      return new Response("Patente ya existe", { status: 400 });
+      return Response.json({ error: "Patente ya existe" }, { status: 400 });
     }
-    return new Response("Error creating moto", { status: 500 });
+    return Response.json({ error: "Error creating moto" }, { status: 500 });
   }
 }

@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     // Optional simple secret check via header
     const secretHeader = (req.headers as any).get?.("x-webhook-secret");
     if (process.env.MP_WEBHOOK_SECRET && secretHeader !== process.env.MP_WEBHOOK_SECRET) {
-      return new Response("Unauthorized", { status: 401 });
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const externalRef = body?.data?.external_reference || body?.external_reference;
@@ -27,6 +27,6 @@ export async function POST(req: Request) {
     return Response.json({ ok: true });
   } catch (e) {
     console.error(e);
-    return new Response("Error processing webhook", { status: 500 });
+    return Response.json({ error: "Error processing webhook" }, { status: 500 });
   }
 }

@@ -16,12 +16,12 @@ export async function GET(
       },
     });
     if (!contrato) {
-      return new Response("Contrato no encontrado", { status: 404 });
+      return Response.json({ error: "Contrato no encontrado" }, { status: 404 });
     }
     return Response.json(contrato);
   } catch (error) {
     console.error(error);
-    return new Response("Error fetching contrato", { status: 500 });
+    return Response.json({ error: "Error fetching contrato" }, { status: 500 });
   }
 }
 
@@ -53,7 +53,7 @@ export async function PUT(
     return Response.json(contrato);
   } catch (error) {
     console.error(error);
-    return new Response("Error updating contrato", { status: 500 });
+    return Response.json({ error: "Error updating contrato" }, { status: 500 });
   }
 }
 
@@ -67,6 +67,6 @@ export async function DELETE(
     return Response.json({ ok: true });
   } catch (error) {
     console.error(error);
-    return new Response("Error deleting contrato", { status: 500 });
+    return Response.json({ error: "Error deleting contrato" }, { status: 500 });
   }
 }

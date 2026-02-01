@@ -12,12 +12,12 @@ export async function GET(
       include: { contratos: true },
     });
     if (!moto) {
-      return new Response("Moto no encontrada", { status: 404 });
+      return Response.json({ error: "Moto no encontrada" }, { status: 404 });
     }
     return Response.json(moto);
   } catch (error) {
     console.error(error);
-    return new Response("Error fetching moto", { status: 500 });
+    return Response.json({ error: "Error fetching moto" }, { status: 500 });
   }
 }
 
@@ -39,9 +39,9 @@ export async function PUT(
   } catch (error: any) {
     console.error(error);
     if (error.code === "P2002") {
-      return new Response("Patente ya existe", { status: 400 });
+      return Response.json({ error: "Patente ya existe" }, { status: 400 });
     }
-    return new Response("Error updating moto", { status: 500 });
+    return Response.json({ error: "Error updating moto" }, { status: 500 });
   }
 }
 
@@ -55,6 +55,6 @@ export async function DELETE(
     return Response.json({ ok: true });
   } catch (error) {
     console.error(error);
-    return new Response("Error deleting moto", { status: 500 });
+    return Response.json({ error: "Error deleting moto" }, { status: 500 });
   }
 }

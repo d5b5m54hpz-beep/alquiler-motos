@@ -29,22 +29,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if DNI already exists
-    const existingCliente = await prisma.cliente.findFirst({
-      where: { dni: cleaned },
-    });
-
-    if (existingCliente) {
-      return Response.json(
-        {
-          valid: false,
-          error: "DNI ya registrado en el sistema",
-          existing: existingCliente,
-        },
-        { status: 409 }
-      );
-    }
-
     // Perform Verifik KYC validation
     const kyc = await performKYC(cleaned, nombre);
 

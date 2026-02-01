@@ -14,7 +14,7 @@ export async function GET(
     if (role === "cliente") {
       const own = await prisma.cliente.findUnique({ where: { userId: userId! } });
       if (!own || own.id !== id) {
-        return new Response("FORBIDDEN", { status: 403 });
+        return Response.json({ error: "FORBIDDEN" }, { status: 403 });
       }
     }
 
@@ -23,19 +23,19 @@ export async function GET(
       include: { contratos: true },
     });
     if (!cliente) {
-      return new Response("Cliente no encontrado", { status: 404 });
+      return Response.json({ error: "Cliente no encontrado" }, { status: 404 });
     }
     return Response.json(cliente);
   } catch (error) {
     console.error(error);
-    return new Response("Error fetching cliente", { status: 500 });
+    return Response.json({ error: "Error fetching cliente" }, { status: 500 });
   }
 }
 
 export async function PUT() {
-  return new Response("Metodo no permitido", { status: 405 });
+  return Response.json({ error: "Metodo no permitido" }, { status: 405 });
 }
 
 export async function DELETE() {
-  return new Response("Metodo no permitido", { status: 405 });
+  return Response.json({ error: "Metodo no permitido" }, { status: 405 });
 }

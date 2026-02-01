@@ -28,10 +28,10 @@ export async function GET() {
     return Response.json(clientes);
   } catch (error) {
     console.error(error);
-    return new Response("Error fetching clientes", { status: 500 });
+    return Response.json({ error: "Error fetching clientes" }, { status: 500 });
   }
 }
 
 export async function POST() {
-  return new Response("Metodo no permitido", { status: 405 });
+  return Response.json({ error: "Metodo no permitido" }, { status: 405 });
 }

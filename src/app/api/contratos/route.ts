@@ -37,7 +37,7 @@ export async function GET() {
     return Response.json(contratos);
   } catch (error) {
     console.error(error);
-    return new Response("Error fetching contratos", { status: 500 });
+    return Response.json({ error: "Error fetching contratos" }, { status: 500 });
   }
 }
 
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     const { clienteId, motoId, fechaInicio, fechaFin, precioSemana, estado } = body;
 
     if (!clienteId || !motoId || !fechaInicio || !fechaFin || !precioSemana) {
-      return new Response("Todos los campos son requeridos", { status: 400 });
+      return Response.json({ error: "Todos los campos son requeridos" }, { status: 400 });
     }
 
     const contrato = await prisma.contrato.create({
@@ -71,6 +71,6 @@ export async function POST(req: NextRequest) {
     return Response.json(contrato);
   } catch (error) {
     console.error(error);
-    return new Response("Error creating contrato", { status: 500 });
+    return Response.json({ error: "Error creating contrato" }, { status: 500 });
   }
 }

@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import PDFDocument from "pdfkit";
+import { NextRequest } from "next/server";
 
 export async function GET(
-  _req: Request,
-  { params }: { params: { id: string } }
+  _req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await context.params;
   const factura = await prisma.factura.findUnique({
     where: { id },
     include: {
@@ -15,7 +16,6 @@ export async function GET(
             select: {
               id: true,
               nombre: true,
-              dni: true,
               email: true,
             },
           },

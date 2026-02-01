@@ -19,11 +19,9 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         email: true,
-        emailVerifiedAt: true,
         name: true,
         phone: true,
         phoneVerifiedAt: true,
-        twoFactorEnabled: true,
         provider: true,
       },
     });
@@ -66,11 +64,9 @@ export async function PUT(req: NextRequest) {
       select: {
         id: true,
         email: true,
-        emailVerifiedAt: true,
         name: true,
         phone: true,
         phoneVerifiedAt: true,
-        twoFactorEnabled: true,
         provider: true,
       },
     });

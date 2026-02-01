@@ -18,18 +18,11 @@ export async function POST(req: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, email: true, name: true, twoFactorEnabled: true },
+      select: { id: true, email: true, name: true },
     });
 
     if (!user) {
       return Response.json({ error: "Usuario no encontrado" }, { status: 404 });
-    }
-
-    if (user.twoFactorEnabled) {
-      return Response.json(
-        { error: "2FA ya está activado en esta cuenta" },
-        { status: 400 }
-      );
     }
 
     // Generar secreto

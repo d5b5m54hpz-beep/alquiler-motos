@@ -7,12 +7,12 @@ export async function POST(req: Request) {
   try {
     const { pagoId, monto } = await req.json();
     if (!pagoId || !monto) {
-      return new Response("Missing pagoId or monto", { status: 400 });
+      return Response.json({ error: "Missing pagoId or monto" }, { status: 400 });
     }
 
     const pago = await prisma.pago.findUnique({ where: { id: pagoId } });
     if (!pago) {
-      return new Response("Pago not found", { status: 404 });
+      return Response.json({ error: "Pago not found" }, { status: 404 });
     }
 
     const preference = new Preference(client);
@@ -28,6 +28,6 @@ export async function POST(req: Request) {
     return Response.json({ url: result.init_point, id: result.id });
   } catch (e) {
     console.error(e);
-    return new Response("Error creating preference", { status: 500 });
+    return Response.json({ error: "Error creating preference" }, { status: 500 });
   }
 }
