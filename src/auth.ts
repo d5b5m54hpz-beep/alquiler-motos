@@ -27,11 +27,7 @@ const config = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log('🔐 Intentando login con:', credentials?.email);
-        console.log('📝 Password recibido:', credentials?.password);
-        
         if (!credentials?.email || !credentials?.password) {
-          console.log('❌ Credenciales vacías');
           return null;
         }
 
@@ -39,23 +35,15 @@ const config = {
           where: { email: credentials.email as string },
         });
 
-        console.log('👤 Usuario encontrado:', user ? 'Sí' : 'No');
-
         if (!user) return null;
 
         if (!user.password) {
-          console.log('❌ Usuario sin password');
           return null;
         }
 
-        console.log('🗝️  Hash almacenado:', user.password);
-        console.log('🔑 Comparando passwords...');
         const ok = await bcrypt.compare(credentials.password as string, user.password);
-        console.log('✅ Password correcto:', ok);
-        
-        if (!ok) return null;
 
-        console.log('✅ Login exitoso, role:', user.role);
+        if (!ok) return null;
         
         return {
           id: user.id,

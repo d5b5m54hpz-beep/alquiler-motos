@@ -26,7 +26,7 @@ export async function POST() {
       ok: true,
       renovados: contratosAVencer.length,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error en renovar contratos:", error);
     return Response.json({ ok: false, error: String(error) }, { status: 500 });
   }

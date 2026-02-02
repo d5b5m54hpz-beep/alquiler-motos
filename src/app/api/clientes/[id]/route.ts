@@ -26,7 +26,7 @@ export async function GET(
       return Response.json({ error: "Cliente no encontrado" }, { status: 404 });
     }
     return Response.json(cliente);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
     return Response.json({ error: "Error fetching cliente" }, { status: 500 });
   }

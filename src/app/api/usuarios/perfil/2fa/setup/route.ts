@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       qrCode,
       otpauth_url: secret.otpauth_url,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error en POST /api/usuarios/perfil/2fa/setup:", error);
     return Response.json({ error: "Error interno del servidor" }, { status: 500 });
   }

@@ -16,7 +16,7 @@ export async function GET() {
       },
     });
     return Response.json(motos);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
     return Response.json({ error: "Error fetching motos" }, { status: 500 });
   }
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     });
 
     return Response.json(moto);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(error);
     if (error.code === "P2002") {
       return Response.json({ error: "Patente ya existe" }, { status: 400 });

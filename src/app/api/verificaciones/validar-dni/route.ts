@@ -93,7 +93,7 @@ export async function POST(req: Request) {
       riskLevel: kyc.riskLevel,
       message: "DNI válido y verificado (cliente no creado)",
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error validando DNI:", error);
     return Response.json(
       { error: "Error validando DNI" },

@@ -13,6 +13,25 @@ interface UserProfile {
   provider: string;
 }
 
+interface Factura {
+  id: string;
+  numero: string;
+  monto: number;
+  estado: string;
+  emitidaAt: string;
+  emailEnviado: boolean;
+  contrato: {
+    moto: {
+      marca: string;
+      modelo: string;
+      patente: string;
+    };
+  };
+  pago: {
+    metodo: string;
+  };
+}
+
 export default function PerfilPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -35,6 +54,9 @@ export default function PerfilPage() {
     showForm: false,
   });
 
+  const [facturas, setFacturas] = useState<Factura[]>([]);
+  const [facturasLoading, setFacturasLoading] = useState(false);
+
   const [chatMessage, setChatMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<{ user: string; ai: string }[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
@@ -47,6 +69,7 @@ export default function PerfilPage() {
 
     if (status === "authenticated") {
       fetchProfile();
+      fetchFacturas();
     }
   }, [status]);
 
@@ -57,12 +80,32 @@ export default function PerfilPage() {
         const data = await res.json();
         setProfile(data);
         setFormData({ name: data.name, phone: data.phone || "" });
+      } else if (res.status === 401) {
+        // No autenticado, redirigir a login
+        router.push("/login");
+        return;
+      } else {
+        const errorData = await res.json();
+        setError(errorData.error || "Error al cargar el perfil");
       }
     } catch (err) {
       console.error("Error fetching profile:", err);
-      setError("Error al cargar el perfil");
+      setError("No se pudo cargar el perfil. Verifica tu conexión.");
     } finally {
       setLoading(false);
+    }
+  const fetchFacturas = async () => {
+    setFacturasLoading(true);
+    try {
+      const res = await fetch("/api/facturas");
+      if (res.ok) {
+        const data = await res.json();
+        setFacturas(data);
+      }
+    } catch (err) {
+      console.error("Error fetching facturas:", err);
+    } finally {
+      setFacturasLoading(false);
     }
   };
 
@@ -599,6 +642,101 @@ export default function PerfilPage() {
             {chatLoading ? 'Enviando...' : 'Enviar'}
           </button>
         </div>
+      </section>
+
+      {/* Facturas */}
+      <section
+        style={{
+          background: "#fff",
+          border: "1px solid #e5e5e5",
+          borderRadius: 8,
+          padding: 24,
+          marginBottom: 24,
+        }}
+      >
+        <h2 style={{ fontSize: 18, fontWeight: 600, color: "#111", marginBottom: 20 }}>
+          Mis Facturas
+        </h2>
+
+        {facturasLoading ? (
+          <p style={{ color: "#666", fontSize: 14 }}>Cargando facturas...</p>
+        ) : facturas.length === 0 ? (
+          <p style={{ color: "#666", fontSize: 14 }}>No tienes facturas aún.</p>
+        ) : (
+          <div style={{ display: "grid", gap: 16 }}>
+            {facturas.map((factura) => (
+              <div
+                key={factura.id}
+                style={{
+                  border: "1px solid #e5e5e5",
+                  borderRadius: 6,
+                  padding: 16,
+                  background: "#fafafa",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 8 }}>
+                  <div>
+                    <h3 style={{ fontSize: 16, fontWeight: 600, color: "#111", marginBottom: 4 }}>
+                      Factura {factura.numero}
+                    </h3>
+                    <p style={{ fontSize: 14, color: "#666", margin: 0 }}>
+                      {factura.contrato.moto.marca} {factura.contrato.moto.modelo} • {factura.contrato.moto.patente}
+                    </p>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <p style={{ fontSize: 18, fontWeight: 600, color: "#059669", margin: 0 }}>
+                      ${factura.monto}
+                    </p>
+                    <p style={{ fontSize: 12, color: "#666", margin: "4px 0 0 0" }}>
+                      {new Date(factura.emitidaAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        padding: "4px 8px",
+                        borderRadius: 4,
+                        background: factura.estado === "emitida" ? "#dbeafe" : "#fef3c7",
+                        color: factura.estado === "emitida" ? "#1e40af" : "#92400e",
+                      }}
+                    >
+                      {factura.estado}
+                    </span>
+                    <span style={{ fontSize: 12, color: "#666" }}>
+                      Método: {factura.pago.metodo}
+                    </span>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {factura.emailEnviado && (
+                      <span style={{ fontSize: 12, color: "#059669", display: "flex", alignItems: "center", gap: 4 }}>
+                        ✓ Email enviado
+                      </span>
+                    )}
+                    <button
+                      style={{
+                        fontSize: 12,
+                        padding: "6px 12px",
+                        background: "#667eea",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 4,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => window.open(`/api/facturas/${factura.id}/pdf`, '_blank')}
+                    >
+                      Ver PDF
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
     </div>

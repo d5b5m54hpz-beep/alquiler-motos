@@ -88,7 +88,7 @@ export async function POST(
       cae: (facturaActualizada as any).cae,
       caeVto: (facturaActualizada as any).caeVto,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error en AFIP:', error);
     return NextResponse.json(
       { error: 'Error procesando AFIP' },

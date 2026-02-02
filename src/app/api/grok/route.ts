@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     const reply = data.choices?.[0]?.message?.content || 'No response';
 
     return Response.json({ reply });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Grok API error:', error);
     return Response.json({ error: 'Internal server error' }, { status: 500 });
   }

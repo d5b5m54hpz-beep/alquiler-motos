@@ -1,0 +1,24 @@
+
+> alquiler-motos@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.33.52:3000
+- Environments: .env.local, .env
+
+✓ Starting...
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+✓ Ready in 1022ms
+prisma:query SELECT `main`.`User`.`id`, `main`.`User`.`email`, `main`.`User`.`name`, `main`.`User`.`image`, `main`.`User`.`provider`, `main`.`User`.`password`, `main`.`User`.`phone`, `main`.`User`.`phoneVerifiedAt`, `main`.`User`.`role`, `main`.`User`.`createdAt`, `main`.`User`.`updatedAt` FROM `main`.`User` WHERE (`main`.`User`.`email` = ? AND 1=1) LIMIT ? OFFSET ?
+Creando usuario: nuevo@example.com
+prisma:query BEGIN IMMEDIATE
+Creando user para: nuevo@example.com
+prisma:query INSERT INTO `main`.`User` (`id`, `email`, `name`, `provider`, `password`, `role`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?,?) RETURNING `id` AS `id`, `email` AS `email`, `name` AS `name`, `image` AS `image`, `provider` AS `provider`, `password` AS `password`, `phone` AS `phone`, `phoneVerifiedAt` AS `phoneVerifiedAt`, `role` AS `role`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+User creado con ID: cml4hb6za0000uzf8fr872a1r, creando cliente...
+prisma:query INSERT INTO `main`.`Cliente` (`id`, `userId`, `nombre`, `email`, `estado`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?) RETURNING `id` AS `id`, `userId` AS `userId`, `nombre` AS `nombre`, `email` AS `email`, `telefono` AS `telefono`, `estado` AS `estado`, `preRegistro` AS `preRegistro`, `aprobadoPor` AS `aprobadoPor`, `aprobadoAt` AS `aprobadoAt`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+Cliente creado con ID: cml4hb6zd0002uzf8gu1n4dx4
+prisma:query COMMIT
+Registro completado exitosamente para: nuevo@example.com
+ POST /api/auth/register 201 in 393ms (compile: 237ms, render: 156ms)
+[?25h

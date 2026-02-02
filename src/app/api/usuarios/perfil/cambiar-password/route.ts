@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     });
 
     return Response.json({ success: true, message: "Contraseña actualizada" });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error en POST /api/usuarios/perfil/cambiar-password:", error);
     return Response.json({ error: "Error interno del servidor" }, { status: 500 });
   }

@@ -1,10 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
-export async function POST(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
+export async function POST(req: Request) {
+  const { id } = await req.json();
   const pagoId = id;
 
   const pago = await prisma.pago.findUnique({

@@ -8,7 +8,7 @@ import { NextRequest } from "next/server";
  */
 export async function GET(req: NextRequest) {
   try {
-    const session = await auth();
+    const session = await auth(req);
 
     if (!session?.user?.email) {
       return Response.json({ error: "No autenticado" }, { status: 401 });
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     }
 
     return Response.json(user);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error en GET /api/usuarios/perfil:", error);
     return Response.json({ error: "Error interno del servidor" }, { status: 500 });
   }
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
  */
 export async function PUT(req: NextRequest) {
   try {
-    const session = await auth();
+    const session = await auth(req);
 
     if (!session?.user?.email) {
       return Response.json({ error: "No autenticado" }, { status: 401 });
@@ -72,7 +72,7 @@ export async function PUT(req: NextRequest) {
     });
 
     return Response.json(updatedUser);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error en PUT /api/usuarios/perfil:", error);
     return Response.json({ error: "Error interno del servidor" }, { status: 500 });
   }

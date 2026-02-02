@@ -15,7 +15,7 @@ export async function GET() {
       },
     });
     return Response.json(alertas);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
     return Response.json({ error: "Error fetching alertas" }, { status: 500 });
   }

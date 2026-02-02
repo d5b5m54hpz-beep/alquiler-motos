@@ -19,7 +19,7 @@ export async function GET() {
       },
     });
     return Response.json(motos);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
     return Response.json({ error: "Error fetching motos" }, { status: 500 });
   }

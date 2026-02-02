@@ -15,7 +15,7 @@ export async function GET(
       return Response.json({ error: "Moto no encontrada" }, { status: 404 });
     }
     return Response.json(moto);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
     return Response.json({ error: "Error fetching moto" }, { status: 500 });
   }
@@ -36,9 +36,9 @@ export async function PUT(
     });
 
     return Response.json(moto);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(error);
-    if (error.code === "P2002") {
+    if (error instanceof Error && 'code' in error && error.code === "P2002") {
       return Response.json({ error: "Patente ya existe" }, { status: 400 });
     }
     return Response.json({ error: "Error updating moto" }, { status: 500 });
@@ -53,7 +53,7 @@ export async function DELETE(
   try {
     await prisma.moto.delete({ where: { id } });
     return Response.json({ ok: true });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
     return Response.json({ error: "Error deleting moto" }, { status: 500 });
   }

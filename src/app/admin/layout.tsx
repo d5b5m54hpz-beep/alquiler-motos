@@ -7,40 +7,41 @@ export const metadata = {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
-      <body>
-        <div style={{ display: "flex", minHeight: "100vh" }}>
-          <aside style={{ width: 240, background: "#111827", color: "white", padding: 16 }}>
-            <div style={{ marginBottom: 24 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 700 }}>Admin</h2>
-            </div>
-            <nav style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <Link href="/admin/dashboard" style={{ color: "#d1d5db" }}>
-                Dashboard
-              </Link>
-              <Link href="/admin/motos" style={{ color: "#d1d5db" }}>
-                Motos
-              </Link>
-              <Link href="/admin/contratos" style={{ color: "#d1d5db" }}>
-                Contratos
-              </Link>
-              <Link href="/admin/facturas" style={{ color: "#d1d5db" }}>
-                Facturas
-              </Link>
-              <Link href="/admin/pagos" style={{ color: "#d1d5db" }}>
-                Pagos
-              </Link>
-              <Link href="/admin/clientes" style={{ color: "#d1d5db" }}>
-                Clientes
-              </Link>
-              <Link href="/admin/usuarios" style={{ color: "#d1d5db" }}>
-                Usuarios
-              </Link>
-            </nav>
-          </aside>
-          <main style={{ flex: 1, background: "#f3f4f6", padding: 24 }}>{children}</main>
+    <div className="flex min-h-screen bg-gray-100">
+      <aside className="w-64 bg-gray-800 text-white p-6">
+        <div className="mb-8">
+          <h2 className="text-xl font-bold">Admin Panel</h2>
         </div>
-      </body>
-    </html>
+        <nav className="space-y-2">
+          <Link href="/admin/dashboard" className="block py-2 px-4 rounded hover:bg-gray-700 text-gray-300 hover:text-white transition-colors">
+            Dashboard
+          </Link>
+          <Link href="/admin/pricing" className="block py-2 px-4 rounded hover:bg-gray-700 text-gray-300 hover:text-white transition-colors">
+            Pricing
+          </Link>
+          <Link href="/admin/motos" className="block py-2 px-4 rounded hover:bg-gray-700 text-gray-300 hover:text-white transition-colors">
+            Motos
+          </Link>
+          <Link href="/admin/contratos" className="block py-2 px-4 rounded hover:bg-gray-700 text-gray-300 hover:text-white transition-colors">
+            Contratos
+          </Link>
+          <Link href="/admin/facturas" className="block py-2 px-4 rounded hover:bg-gray-700 text-gray-300 hover:text-white transition-colors">
+            Facturas
+          </Link>
+          <Link href="/admin/pagos" className="block py-2 px-4 rounded hover:bg-gray-700 text-gray-300 hover:text-white transition-colors">
+            Pagos
+          </Link>
+          <Link href="/admin/clientes" className="block py-2 px-4 rounded hover:bg-gray-700 text-gray-300 hover:text-white transition-colors">
+            Clientes
+          </Link>
+          <Link href="/admin/usuarios" className="block py-2 px-4 rounded hover:bg-gray-700 text-gray-300 hover:text-white transition-colors">
+            Usuarios
+          </Link>
+        </nav>
+      </aside>
+      <main className="flex-1 p-8 bg-gray-50">
+        {children}
+      </main>
+    </div>
   );
 }

@@ -75,7 +75,7 @@ export async function GET(req: Request) {
         alto: `${((estadisticas.porRiesgo.HIGH / estadisticas.total) * 100).toFixed(2)}%`,
       },
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error generando reporte:", error);
     return Response.json(
       { error: "Error generando reporte" },

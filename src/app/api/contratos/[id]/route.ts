@@ -19,7 +19,7 @@ export async function GET(
       return Response.json({ error: "Contrato no encontrado" }, { status: 404 });
     }
     return Response.json(contrato);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
     return Response.json({ error: "Error fetching contrato" }, { status: 500 });
   }
@@ -51,7 +51,7 @@ export async function PUT(
     });
 
     return Response.json(contrato);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
     return Response.json({ error: "Error updating contrato" }, { status: 500 });
   }
@@ -65,7 +65,7 @@ export async function DELETE(
   try {
     await prisma.contrato.delete({ where: { id } });
     return Response.json({ ok: true });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
     return Response.json({ error: "Error deleting contrato" }, { status: 500 });
   }

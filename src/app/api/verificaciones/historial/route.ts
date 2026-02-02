@@ -38,7 +38,7 @@ export async function GET(req: Request) {
       limite,
       totalPaginas: Math.ceil(total / limite),
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error obteniendo historial:", error);
     return Response.json(
       { error: "Error obteniendo historial" },

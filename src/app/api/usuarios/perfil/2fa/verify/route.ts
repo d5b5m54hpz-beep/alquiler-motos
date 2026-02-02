@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       success: true,
       message: "2FA verificado exitosamente",
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error en POST /api/usuarios/perfil/2fa/verify:", error);
     return Response.json({ error: "Error interno del servidor" }, { status: 500 });
   }

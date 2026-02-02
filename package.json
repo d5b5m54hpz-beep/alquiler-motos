@@ -7,7 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "npx tsx prisma/seed.ts"
+    "seed": "npx tsx prisma/seed.ts",
+    "test:backend": "./test-backend.sh",
+    "test:db": "node test-db.js",
+    "test:auth": "node test-auth.js",
+    "test:env": "node check-env.js",
+    "test:all": "npm run test:env && npm run test:db && npm run test:auth && npm run test:backend",
+    "diagnose": "./diagnose.sh",
+    "check-node": "./check-node.sh"
   },
   "dependencies": {
     "@afipsdk/afip.js": "^1.2.2",
@@ -16,7 +23,6 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.4",
     "@sendgrid/mail": "^8.1.6",
-    "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
     "mercadopago": "^2.12.0",
@@ -47,6 +53,7 @@
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

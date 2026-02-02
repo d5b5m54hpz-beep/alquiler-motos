@@ -50,7 +50,7 @@ export async function GET(req: Request) {
       total: alertasRiesgo.length,
       filtroRiesgo: riesgo,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error obteniendo alertas de riesgo:", error);
     return Response.json(
       { error: "Error obteniendo alertas de riesgo" },

@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -23,21 +23,19 @@ model User {
 }
 
 model Cliente {
-  id               String   @id @default(cuid())
-  userId           String   @unique
-  nombre           String?
-  email            String   @unique
-  telefono         String?
-  estado           String   @default("pendiente") // pendiente | aprobado | rechazado
-
-  preRegistro      Json?    // respuestas del formulario (10 preguntas)
-  aprobadoPor      String?
-  aprobadoAt       DateTime?
-
-  contratos        Contrato[]
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  user             User     @relation(fields: [userId], references: [id])
+  id          String     @id @default(cuid())
+  userId      String     @unique
+  nombre      String?
+  email       String     @unique
+  telefono    String?
+  estado      String     @default("pendiente")
+  preRegistro Json?
+  aprobadoPor String?
+  aprobadoAt  DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  user        User       @relation(fields: [userId], references: [id])
+  contratos   Contrato[]
 }
 
 model Moto {
@@ -53,20 +51,26 @@ model Moto {
 }
 
 model Contrato {
-  id           String    @id @default(cuid())
-  clienteId    String
-  motoId       String
-  fechaInicio  DateTime
-  fechaFin     DateTime
-  precioSemana Int
-  estado       String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  alertas      Alerta[]
-  cliente      Cliente   @relation(fields: [clienteId], references: [id])
-  moto         Moto      @relation(fields: [motoId], references: [id])
-  facturas     Factura[]
-  pagos        Pago[]
+  id                String    @id @default(cuid())
+  clienteId         String
+  motoId            String
+  fechaInicio       DateTime
+  fechaFin          DateTime
+  precioSemana      Float
+  estado            String
+  duracionMeses     Int?
+  tipoPago          String?
+  precioMensual     Float?
+  precioSemanal     Float?
+  descuentoDuracion Float?
+  descuentoSemanal  Float?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  alertas           Alerta[]
+  moto              Moto      @relation(fields: [motoId], references: [id])
+  cliente           Cliente   @relation(fields: [clienteId], references: [id])
+  facturas          Factura[]
+  pagos             Pago[]
 }
 
 model Pago {
@@ -99,8 +103,8 @@ model Factura {
   emailEnviado Boolean   @default(false)
   emailAt      DateTime?
   createdAt    DateTime  @default(now())
-  contrato     Contrato  @relation(fields: [contratoId], references: [id])
   pago         Pago      @relation(fields: [pagoId], references: [id])
+  contrato     Contrato  @relation(fields: [contratoId], references: [id])
 }
 
 model Alerta {
@@ -112,6 +116,18 @@ model Alerta {
   leida           Boolean   @default(false)
   dniVerificacion Json?
   createdAt       DateTime  @default(now())
-  contrato        Contrato? @relation(fields: [contratoId], references: [id])
   pago            Pago?     @relation(fields: [pagoId], references: [id])
+  contrato        Contrato? @relation(fields: [contratoId], references: [id])
+}
+
+model PricingConfig {
+  id                String   @id @unique @default("default")
+  precioBaseMensual Float
+  descuentoSemanal  Float
+  descuentoMeses3   Float
+  descuentoMeses6   Float
+  descuentoMeses9   Float
+  descuentoMeses12  Float
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }

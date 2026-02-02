@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
@@ -8,6 +8,15 @@ export async function POST(req: Request) {
     if (!name || !email || !password) {
       return Response.json(
         { error: "Todos los campos son requeridos" },
+        { status: 400 }
+      );
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return Response.json(
+        { error: "Email inválido" },
         { status: 400 }
       );
     }
@@ -27,34 +36,49 @@ export async function POST(req: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user with role "cliente"
-    const user = await prisma.user.create({
-      data: {
-        email,
-        name,
-        password: hashedPassword,
-        role: "cliente",
-        provider: "credentials",
-      },
+    console.log(`Creando usuario: ${email}`);
+
+    // Create user and cliente in a transaction
+    const result = await prisma.$transaction(async (tx) => {
+      console.log(`Creando user para: ${email}`);
+      // Create user with role "cliente"
+      const user = await tx.user.create({
+        data: {
+          email,
+          name,
+          password: hashedPassword,
+          role: "cliente",
+          provider: "credentials",
+        },
+      });
+
+      console.log(`User creado con ID: ${user.id}, creando cliente...`);
+
+      // Create Cliente record
+      const cliente = await tx.cliente.create({
+        data: {
+          userId: user.id,
+          nombre: name,
+          email,
+        },
+      });
+
+      console.log(`Cliente creado con ID: ${cliente.id}`);
+
+      return { user, cliente };
     });
 
-    // Create Cliente record
-    await prisma.cliente.create({
-      data: {
-        userId: user.id,
-        nombre: name,
-        email,
-      },
-    });
+    console.log(`Registro completado exitosamente para: ${email}`);
 
     return Response.json(
       { success: true, message: "Cuenta creada exitosamente" },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error creating user:", error);
+    const errorMessage = error instanceof Error ? error.message : "Error desconocido";
     return Response.json(
-      { error: "Error al crear la cuenta" },
+      { error: `Error al crear la cuenta: ${errorMessage}` },
       { status: 500 }
     );
   }

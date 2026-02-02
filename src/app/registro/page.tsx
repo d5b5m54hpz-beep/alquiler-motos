@@ -58,10 +58,14 @@ export default function RegistroPage() {
       if (result?.ok) {
         router.push("/");
       } else {
-        router.push("/login");
+        // Login failed, but registration was successful
+        console.log("Registro exitoso, pero login automático falló:", result?.error);
+        setError("Cuenta creada exitosamente. Por favor inicia sesión.");
+        setTimeout(() => router.push("/login"), 2000);
       }
     } catch (err) {
-      setError("Error al crear la cuenta");
+      console.error("Error en registro:", err);
+      setError("Error al crear la cuenta. Verifica tu conexión.");
       setLoading(false);
     }
   };
